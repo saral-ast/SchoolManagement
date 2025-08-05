@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResultController;
 use App\Http\Controllers\StudentController;
@@ -21,9 +22,7 @@ Route::middleware('auth')->group(function(){
     Route::get('/', function () {
         return redirect()->route('dashboard');
     })->name('home');
-    Route::get('/dashboard',function(){
-    return view('dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard',[DashboardController::class,'dashboard'])->name('dashboard');
     //auth route 
     Route::post('/logout',[AuthController::class,'logout'])->name('logout');
 
@@ -62,7 +61,6 @@ Route::middleware('auth')->group(function(){
     Route::get('/students/{student}',[StudentController::class,'edit'])->name('student.edit')->middleware('permission:edit.students');
     Route::put('/students/{student}',[StudentController::class,'update'])->name('student.update')->middleware('permission:edit.students');
     Route::delete('/students/{student}',[StudentController::class,'destroy'])->name('student.destroy')->middleware('permission:delete.students');
-
     Route::get('/classes/{id}/students',[StudentController::class,'getStudents'])->name('classes.students');
     
     Route::get('/results',[ResultController::class,'index'])->name('result.index')->middleware('permission:view.results');
@@ -76,9 +74,9 @@ Route::middleware('auth')->group(function(){
 });
 
 
-Route::get('/register',function(){
-    return view('auth.register');
-})->name('register');
+// Route::get('/register',function(){
+//     return view('auth.register');
+// })->name('register');
 
 
 
@@ -86,25 +84,25 @@ Route::get('/register',function(){
 
 
 
-Route::get('/pages/icons',function(){
-    return view('pages.icons');
-})->name('pages.icons');
+// Route::get('/pages/icons',function(){
+//     return view('pages.icons');
+// })->name('pages.icons');
 
 
-Route::get('/pages/maps',function(){
-    return view('pages.maps');
-})->name('pages.maps');
+// Route::get('/pages/maps',function(){
+//     return view('pages.maps');
+// })->name('pages.maps');
 
 
-Route::get('/pages/notification',function(){
-    return view('pages.notifications');
-})->name('pages.notifications');
+// Route::get('/pages/notification',function(){
+//     return view('pages.notifications');
+// })->name('pages.notifications');
 
-Route::get('/pages/tables',function(){
-    return view('pages.tables');
-})->name('pages.tables');
+// Route::get('/pages/tables',function(){
+//     return view('pages.tables');
+// })->name('pages.tables');
 
 
-Route::get('/pages/maps',function(){
-    return view('pages.typography');
-})->name('pages.typography');
+// Route::get('/pages/maps',function(){
+//     return view('pages.typography');
+// })->name('pages.typography');
