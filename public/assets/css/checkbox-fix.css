@@ -1,0 +1,14 @@
+/* Fix for checkbox visibility in Black Dashboard theme */
+.form-check-input {
+    position: static !important;
+    margin: 0 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: inline-block !important;
+}
+
+.form-check-inline .form-check-input {
+    position: static !important;
+    margin-right: 0.3125rem !important;
+    margin-left: 0 !important;
+} 
