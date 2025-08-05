@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ResultController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentParentController;
 use App\Http\Controllers\TeacherController;
@@ -71,12 +72,15 @@ Route::middleware('auth')->group(function(){
     Route::put('/result/{result}/edit',[ResultController::class,'update'])->name('result.update')->middleware('permission:edit.results');
     Route::get('/result/{result}/download',[ResultController::class,'downloadPdf'])->name('result.download')->middleware('permission:view.results');
 
+    Route::get('/time-table/create',[ScheduleController::class,'create'])->name('schedule.create');
+    Route::post('/time-table/create',[ScheduleController::class,'store'])->name('schedule.store');
+
 });
 
 
-// Route::get('/register',function(){
-//     return view('auth.register');
-// })->name('register');
+Route::get('/register',function(){
+    return view('auth.register');
+})->name('register');
 
 
 
