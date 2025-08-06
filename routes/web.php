@@ -74,6 +74,9 @@ Route::middleware('auth')->group(function(){
 
     Route::get('/time-table/create',[ScheduleController::class,'create'])->name('schedule.create');
     Route::post('/time-table/create',[ScheduleController::class,'store'])->name('schedule.store');
+    
+
+    Route::get('/subject/{id}/teahcers',[ScheduleController::class,'getTeachers'])->name('suject.teachers');
 
 });
 

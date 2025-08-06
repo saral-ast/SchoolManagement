@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Zap\Models\Concerns\HasSchedules;
 
 class Teacher extends Model
 {
+    use HasSchedules;
     protected $guarded = [];
     public function user(){
         return $this->belongsTo(User::class);
