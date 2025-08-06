@@ -31,6 +31,9 @@
 
                     <td>
                         <x-form-field label="Subject" name="subject[{{ $key }}]" type="select" class='subject-select' required>
+                                    
+                            <option value="" class="bg-dark">Select Subject</option>
+
                             @foreach ($allSubject as $subject)
                                 <option value="{{ $subject->id }}" class="bg-dark">{{ $subject->name }}</option>
                             @endforeach
@@ -95,7 +98,7 @@ $(document).ready(function(){
                     console.log('donr');
                     // Populate $teacherSelect here based on response
                     $teacherSelect.empty();
-                    $teacherSelect.append('<option value="">Select Teacher</option>');
+                   $teacherSelect.append('<option value="">Select Teacher</option>');
 
                     // Populate with new data
                     if (data.teachers && data.teachers.length) {

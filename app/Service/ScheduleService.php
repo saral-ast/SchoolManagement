@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Models\Teacher;
 use Carbon\Carbon;
 use Zap\Facades\Zap;
 
@@ -30,5 +31,40 @@ class ScheduleService
         return $availableTeachers;
 
     } 
+
+    public function addSchedule($data){
+            $classId = $data['class'];
+            $startDate = $data['start_date'];
+            $endDate = $data['end_date'];
+            $subjects = $data['subject'];
+            $teachers = $data['teacher'];
+            $slots = $data['slot'];
+            $periods = $data['period'];
+
+            
+        $count = count($slots);
+        for ($i=0; $i <$count ; $i++) { 
+            $subjectId = $subjects[$i];
+            $teacherId = $teachers[$i];
+            $slotName = $slots[$i];
+
+            [$startTime,$endTIme] = array_map('trim',explode('-',$periods[$i]));
+            
+            $teacher = Teacher::findOrFail($teacherId);
+            
+             Zap::for($teacher)->named("Subject {$subjectId} to Class {$classId} - {$slotName} ")
+            ->appointment()
+            ->from($startDate)
+            ->to($endDate)
+            ->addPeriod($startTime,$endTIme)
+            ->weekly((['monday', 'tuesday', 'wednesday', 'thursday', 'friday']))
+            ->withMetadata([
+                'subject_id' => $subjectId,
+                'class_id' =>  $classId,
+                'slot' => $slotName
+            ])->save();
+        }
+    }
+    
     
 }
