@@ -80,6 +80,7 @@ Route::middleware('auth')->group(function(){
 
     Route::get('/subject/{id}/teahcers',[ScheduleController::class,'getTeachers'])->name('suject.teachers');
 
+
 });
 
 

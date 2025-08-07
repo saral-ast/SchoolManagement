@@ -11,66 +11,60 @@
         {{-- @endcan --}}
     </div>
     <div class="card-body">
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <x-form-field label="Select Class" name="class_filter" type="select" class="mb-3" id="class-filter">
-                    <option value="" class="bg-dark">All Classes</option>
-                    @foreach ($classes as $class)
-                        <option value="{{ $class->id }}" class="bg-dark" {{ $classId == $class->id ? 'selected' : '' }}>{{ $class->name }}</option>
-                    @endforeach
-                </x-form-field>
+        @foreach($classes as $class)
+            <div class="class-timetable mb-4">
+                <h5 class="text-info mb-3">{{ $class->name }} - Time Table</h5>
+                
+                <div class="table-responsive">
+                    <table class="table table-bordered text-white">
+                        <thead>
+                            <tr>
+                                <th>Time Slot</th>
+                                @foreach($weekDays as $day)
+                                    <th>{{ $day->name }}</th>
+                                @endforeach
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($timeSlots as $slot)
+                            <tr>
+                                <td>{{ $slot->period }}</td>
+                                @foreach($weekDays as $day)
+                                    <td id="schedule-{{ $class->id }}-{{ $slot->name }}-{{ $day->name }}" class="schedule-cell">
+                                        @php
+                                            $slotName = $slot->name;
+                                            $dayName = $day->name;
+                                            $classId = $class->id;
+                                            $hasSchedule = isset($scheduleData[$classId][$slotName][$dayName]);
+                                        @endphp
+                                        
+                                        @if($hasSchedule)
+                                            <div class="schedule-info">
+                                                <p class="mb-1"><strong>{{ $scheduleData[$classId][$slotName][$dayName]['subject'] }}</strong></p>
+                                                <p class="mb-0 text-muted">{{ $scheduleData[$classId][$slotName][$dayName]['teacher'] }}</p>
+                                            </div>
+                                        @else
+                                            <span class="text-muted">No class</span>
+                                        @endif
+                                    </td>
+                                @endforeach
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
+            
+            @if(!$loop->last)
+                <hr class="my-4">
+            @endif
+        @endforeach
         
-        <div class="table-responsive">
-            <table class="table table-bordered text-white">
-                <thead>
-                    <tr>
-                        <th>Time Slot</th>
-                        @foreach($weekDays as $day)
-                            <th>{{ $day->name }}</th>
-                        @endforeach
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($timeSlots as $slot)
-                    <tr>
-                        <td>{{ $slot->period }}</td>
-                        @foreach($weekDays as $day)
-                            <td id="schedule-{{ $slot->name }}-{{ $day->name }}" class="schedule-cell">
-                                @php
-                                    // Debug what we're looking for in the scheduleData array
-                                    $slotName = $slot->name;
-                                    $dayName = $day->name;
-                                    $hasSchedule = isset($scheduleData[$slotName][$dayName]);
-                                @endphp
-                                
-                                @if($hasSchedule)
-                                    <div class="schedule-info">
-                                        <p class="mb-1">Subject: {{ $scheduleData[$slotName][$dayName]['subject'] }}</p>
-                                        <p class="mb-0">Teacher: {{ $scheduleData[$slotName][$dayName]['teacher'] }}</p>
-                                    </div>
-                                @else
-                                    <span class="text-muted">No class</span>
-                                @endif
-                            </td>
-                        @endforeach
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+        @if($classes->isEmpty())
+            <div class="alert alert-info">
+                <p class="mb-0">No classes found or no schedule data available.</p>
+            </div>
+        @endif
     </div>
 </div>
 @endsection
-
-@push('js')
-<script>
-$(document).ready(function() {
-    $('#class-filter').change(function() {
-        const classId = $(this).val();
-        window.location.href = `{{ route('schedule.index') }}?class_id=${classId}`;
-    });
-});
-</script>
-@endpush

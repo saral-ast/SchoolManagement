@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Models\Classes;
 use App\Models\Teacher;
 use Carbon\Carbon;
 use Zap\Facades\Zap;
@@ -11,6 +12,46 @@ class ScheduleService
     /**
      * Create a new class instance.
      */
+    /**
+     * Get classes based on user role
+     * 
+     * @param \App\Models\User $user
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getClasses($user)
+    {
+        $userType = $user->user_type();
+        
+        // Admin and Teacher can see all classes
+        switch ($userType) {
+            case 'admin':
+            case 'teacher':
+                return Classes::all();
+                // break;
+                
+            case 'student':
+                $student = $user->student()->first();
+                if ($student && $student->class_id) {
+                    return Classes::where('id', $student->class_id)->get();
+                }
+                break;
+                
+            case 'student_parent':
+                $parent = $user->student_parent()->first();
+                if ($parent && $parent->student) {
+                    return Classes::where('id', $parent->student->class_id)->get();
+                }
+                break;
+                
+            default:
+                // Handle unexpected user types
+                dd('Invalid user type');
+                break;
+        }
+
+        
+        return collect([]);
+    }
     public function availableTeachers($teachers, $start_date, $end_date, $start_time, $end_time, $weekday)
     {
         $start = Carbon::parse($start_date);
@@ -33,8 +74,6 @@ class ScheduleService
         
         return $availableTeachers;
     }
-
-
     public function addSchedule($data){
             $classId = $data['class'];
             $startDate = $data['start_date'];
@@ -71,6 +110,5 @@ class ScheduleService
             ])->save();
         }
     }
-    
     
 }

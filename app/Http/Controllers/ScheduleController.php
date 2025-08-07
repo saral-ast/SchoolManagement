@@ -9,6 +9,7 @@ use App\Models\Teacher;
 use App\Service\ScheduleService;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Zap\Facades\Zap;
@@ -36,52 +37,58 @@ class ScheduleController extends Controller
             (object)['id' => 5, 'name' => 'Friday'],
         ];
         $this->totalCount = count($this->totalSlot);
-    }
+    }   
+    
     public function index(Request $request)
-    {
-        $classId = $request->query('class_id');
-        $classes = Classes::all();
-        $weekDays = $this->weekDays;       // Monday to Friday as objects with ->name
-        $timeSlots = $this->totalSlot;     // Your 5 slots with names and periods
+{
+    $user = Auth::user();
+    $classes = $this->scheduleService->getClasses($user);
+    
+    // Use the properties defined in constructor
+    $weekDays = $this->weekDays;
+    $timeSlots = $this->totalSlot;
+    $scheduleData = []; // This will be organized by class
+    
+    $teachers = Teacher::with(['user', 'appointmentSchedules'])->get();
+    $subjects = Subject::all()->keyBy('id');
+    
+    foreach ($classes as $class) {
+        // Initialize schedule data for this class
+        $scheduleData[$class->id] = [];
         
-        // Initialize schedule data array: format [slot][day] => ['subject' => ..., 'teacher' => ...]
-        $scheduleData = [];
-        
-        if ($classId) {
-            $selectedClass = Classes::findOrFail($classId);
+        foreach ($teachers as $teacher) {
+            $schedules = $teacher->appointmentSchedules
+                ->where('metadata.class_id', $class->id);
             
-            // Get all teachers
-            $teachers = Teacher::with('user')->get();
-            
-            foreach ($teachers as $teacher) {
-                // Fetch all appointments (lessons) for this teacher filtered by class_id in meta
-                $schedules = $teacher->appointmentSchedules()
-                    ->where('metadata->class_id', $classId)
-                    ->get();
+            foreach ($schedules as $schedule) {
+                $metadata = $schedule->metadata;
                 
-                foreach ($schedules as $schedule) {
-                    $metadata = $schedule->metadata;
-                    if (isset($metadata['slot']) && isset($metadata['subject_id']) && isset($metadata['day'])) {
-                        $slot = $metadata['slot'];
-                        $subjectId = $metadata['subject_id'];
-                        $dayName = ucfirst($metadata['day']); // Convert 'monday' to 'Monday'
-                        
-                        $subject = Subject::find($subjectId);
-                        if ($subject) {
-                            // Assign schedule only to the specific day stored in metadata
-                            $scheduleData[$slot][$dayName] = [
-                                'subject' => $subject->name,
-                                'teacher' => $teacher->user ? $teacher->user->name : 'N/A',
-                            ];
-                        }
-                    }
+                if (!isset($metadata['slot']) || 
+                    !isset($metadata['subject_id']) || 
+                    !isset($metadata['day'])) {
+                    continue;
+                }
+                
+                $slot = $metadata['slot'];
+                $subjectId = $metadata['subject_id'];
+                $dayName = ucfirst($metadata['day']);
+                
+                $subject = $subjects->get($subjectId);
+                if ($subject) {
+                    $scheduleData[$class->id][$slot][$dayName] = [
+                        'subject' => $subject->name,
+                        'teacher' => $teacher->user ? $teacher->user->name : 'N/A',
+                    ];
                 }
             }
         }
-
-        
-        return view('time_table.index', compact('classes', 'weekDays', 'timeSlots', 'scheduleData', 'classId'));
     }
+    
+    return view('time_table.index', compact('classes', 'weekDays', 'timeSlots', 'scheduleData'));
+}
+
+
+
 
     public function create()
     {
@@ -89,8 +96,6 @@ class ScheduleController extends Controller
         $allSubject = Subject::all();
         $allTeachers = Teacher::with('user')->get();
         $weekDays = $this->weekDays;
-        
-
         $totalSlot = $this->totalSlot;
 
         return view('time_table.create', compact('allClass','allSubject','totalSlot','allTeachers','weekDays'));
@@ -116,9 +121,9 @@ class ScheduleController extends Controller
     }
 
     public function getTeachers(string $id){
-           try {
+        try {
             //code...
-             [$start_time, $end_time] = array_map('trim', explode('-', request()->period));
+            [$start_time, $end_time] = array_map('trim', explode('-', request()->period));
             $subject = Subject::with('teachers.user')->findOrFail($id);
 
             $teachers = $subject->teachers;
@@ -131,11 +136,12 @@ class ScheduleController extends Controller
             ]);
            } catch (Exception $e) {
             //throw $th;
-                    return response()->json(['error' => $e->getMessage()], 500);
-
-           }
-        
+                return response()->json(['error' => $e->getMessage()], 500);
+        }     
     }
+
+
+
     
    
 }
