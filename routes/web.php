@@ -72,9 +72,11 @@ Route::middleware('auth')->group(function(){
     Route::put('/result/{result}/edit',[ResultController::class,'update'])->name('result.update')->middleware('permission:edit.results');
     Route::get('/result/{result}/download',[ResultController::class,'downloadPdf'])->name('result.download')->middleware('permission:view.results');
 
+    Route::get('/time-table',[ScheduleController::class,'index'])->name('schedule.index');
     Route::get('/time-table/create',[ScheduleController::class,'create'])->name('schedule.create');
     Route::post('/time-table/create',[ScheduleController::class,'store'])->name('schedule.store');
-    
+    Route::post('/time-table',[ScheduleController::class,'show'])->name('schedule.index');
+
 
     Route::get('/subject/{id}/teahcers',[ScheduleController::class,'getTeachers'])->name('suject.teachers');
 

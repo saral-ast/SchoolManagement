@@ -160,6 +160,20 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Can create results',
                 'model'       => 'Result',
             ],
+            
+            // Schedule
+            [
+                'name'        => 'Can View Schedules',
+                'slug'        => 'view.schedules',
+                'description' => 'Can view time tables',
+                'model'       => 'Schedule',
+            ],
+            [
+                'name'        => 'Can Create Schedules',
+                'slug'        => 'create.schedules',
+                'description' => 'Can create time tables',
+                'model'       => 'Schedule',
+            ],
             [
                 'name'        => 'Can Edit Results',
                 'slug'        => 'edit.results',

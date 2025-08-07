@@ -10,6 +10,12 @@
         @endforeach
     </x-form-field>
 
+    <x-form-field label="Select Day" name="day" type="select" class="mb-3" id="schedule-day">
+        @foreach($weekDays as $day)
+            <option value="{{ $day->name }}" class="bg-dark">{{ $day->name }}</option>
+        @endforeach
+    </x-form-field>
+
     <x-form-field label="Start Date" name="start_date" type="date" class="mb-3" />
 
     <x-form-field label="End Date" name="end_date" type="date" class="mb-3" />
@@ -42,8 +48,7 @@
 
                     <td>
                         <x-form-field label="Teacher" name="teacher[{{ $key }}]" type="select" required class="teacher-select bg-dark">
-                            <option value="" class="bg-dark">Select Teacher</option>
-                          
+                            <option value="" class="bg-dark">Select Teacher</option>      
                         </x-form-field>
                     </td>
 
@@ -75,7 +80,7 @@ $(document).ready(function(){
         const $row = $(this).closest('tr');
         const $teacherSelect = $row.find('.teacher-select');
         const period = $row.find('input[type=hidden][name^=period]').val();
-
+        const day = $('#schedule-day').val();
         const startDate = $('input[name="start_date"]').val();
         const endDate = $('input[name="end_date"]').val();
         $teacherSelect.empty().append('<option class="bg-dark text-white" selected>Loading...</option>');
@@ -89,7 +94,8 @@ $(document).ready(function(){
                 data: {
                     start_date: startDate,
                     end_date: endDate,
-                    period: period
+                    period: period,
+                    day: day
                 },
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -112,7 +118,7 @@ $(document).ready(function(){
                     } else {
                         $teacherSelect.append(`<option value="" class='bg-dark text-white'>No teachers available</option>`);
                     }
-                                }
+                    }
                 });
             }
     });

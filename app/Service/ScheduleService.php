@@ -11,26 +11,29 @@ class ScheduleService
     /**
      * Create a new class instance.
      */
-    public function availableTeachers($teachers,$start_date,$end_date,$start_time,$end_time)
+    public function availableTeachers($teachers, $start_date, $end_date, $start_time, $end_time, $weekday)
     {
         $start = Carbon::parse($start_date);
         $end = Carbon::parse($end_date);
-        $availableTeachers = $teachers->filter(function($teacher) use($start,$end,$start_time,$end_time){
+        $weekday = strtolower($weekday); // e.g., 'monday', 'tuesday'
+        
+        $availableTeachers = $teachers->filter(function($teacher) use($start, $end, $start_time, $end_time, $weekday) {
             
-             for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
-           
-            
-                if (! $teacher->isAvailableAt($date->toDateString(), $start_time, $end_time)) {
-                    return false;  // Teacher unavailable on this day/time slot → exclude
+            for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
+                // Only check dates that match the target weekday
+                if (strtolower($date->format('l')) === $weekday) {
+                    if (!$teacher->isAvailableAt($date->toDateString(), $start_time, $end_time)) {
+                        return false; // Teacher unavailable on this specific weekday/time → exclude
+                    }
                 }
+            }
             
-                }
-                return true;  // Teacher available for entire range
-            })->values();
-            
+            return true; // Teacher available for all instances of the weekday in range
+        })->values();
+        
         return $availableTeachers;
+    }
 
-    } 
 
     public function addSchedule($data){
             $classId = $data['class'];
@@ -40,6 +43,7 @@ class ScheduleService
             $teachers = $data['teacher'];
             $slots = $data['slot'];
             $periods = $data['period'];
+            $day = $data['day'];
 
             
         $count = count($slots);
@@ -47,6 +51,7 @@ class ScheduleService
             $subjectId = $subjects[$i];
             $teacherId = $teachers[$i];
             $slotName = $slots[$i];
+            $weekday = strtolower($day);
 
             [$startTime,$endTIme] = array_map('trim',explode('-',$periods[$i]));
             
@@ -57,11 +62,12 @@ class ScheduleService
             ->from($startDate)
             ->to($endDate)
             ->addPeriod($startTime,$endTIme)
-            ->weekly((['monday', 'tuesday', 'wednesday', 'thursday', 'friday']))
+            ->weekly([$weekday])
             ->withMetadata([
                 'subject_id' => $subjectId,
                 'class_id' =>  $classId,
-                'slot' => $slotName
+                'slot' => $slotName,
+                'day' => $weekday
             ])->save();
         }
     }

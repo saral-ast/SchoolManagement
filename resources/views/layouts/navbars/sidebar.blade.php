@@ -74,6 +74,15 @@
                     <p>Maps</p>
                 </a>
             </li> --}}
+            
+            @permission('view.schedules')
+            <li @class(['active' => request()->routeIs('schedule.index') || request()->routeIs('schedule.create')])>
+                <a href="{{ route('schedule.index') }}">
+                    <i class="tim-icons icon-calendar-60"></i>
+                    <p>Time Table</p>
+                </a>
+            </li>
+            @endpermission
             @permission('view.results')
                         <li @class(['active' => request()->routeIs('result.index')])>
                             <a href="{{ route('result.index') }}">

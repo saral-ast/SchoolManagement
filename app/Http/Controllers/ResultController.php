@@ -56,7 +56,7 @@ class ResultController extends Controller
            
            $this->resultService->addSubjectMarks($subjectMarks,$validated['student_id'],$validated['exam_type'],$result->id);
            DB::commit();
-           return redirect()->back()->with('status','Result Created Successfully');
+           return redirect()->route('result.index')->with('status','Result Created Successfully');
         } catch (Exception $e) {
              DB::rollBack();
              dd($e);

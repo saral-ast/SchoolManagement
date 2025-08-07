@@ -23,8 +23,8 @@ class DatabaseSeeder extends Seeder
             PermissionsTableSeeder::class,
             RolesTableSeeder::class,
             ConnectRelationshipsSeeder::class,
-            UsersTableSeeder::class,
             ClassesTableSeeder::class,
+            UsersTableSeeder::class,
             SubjectsTableSeeder::class,
             TeacherSubjectSeeder::class, 
         ]);

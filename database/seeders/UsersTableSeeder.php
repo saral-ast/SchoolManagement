@@ -6,91 +6,97 @@ use App\Models\Admin;
 use App\Models\Student;
 use App\Models\StudentParent;
 use App\Models\Teacher;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class UsersTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-   public function run()
+    public function run()
     {
-        $roles = [
-            'Admin'   => 'admin@admin.com',
-            'Teacher' => 'teacher@school.com',
-            'Student' => 'student@school.com',
-             'Parent'  => 'parent@home.com',
+        // Step 1: Create 30 random users via factory
+        // User::factory()->count(30)->create();
+
+        // Step 2: Define roles and counts for manual creation
+        $userRoles = [
+            'Admin'   => 1,
+            'Teacher' => 9,
+            'Student' => 10,
+            'Parent'  => 10,
         ];
 
         $permissions = config('roles.models.permission')::all();
 
-        foreach ($roles as $roleName => $email) {
+        // Collections to keep track of created students and parents
+        $studentUsers = collect();
+        $parentUsers = collect();
+
+        foreach ($userRoles as $roleName => $count) {
             $role = config('roles.models.role')::where('name', $roleName)->first();
 
-            if (config('roles.models.defaultUser')::where('email', $email)->first() === null) {
-                $newUser = config('roles.models.defaultUser')::create([
-                    'name'       => $roleName,
-                    'email'      => $email,
-                    'address'    => 'Ahmedabad',
-                    'birth_date' => '1990-01-01',
-                    'gender'     => 'male',
-                    'phone_number'      => '1234567890',
-                    'password'   => bcrypt('password'),
+            for ($i = 0; $i < $count; $i++) {
+                $user = User::create([
+                    'name'         => $roleName . ' ' . ($i + 1),
+                    'email'        => strtolower($roleName) . $i . '@example.com',
+                    'address'      => 'Ahmedabad',
+                    'birth_date'   => '1990-01-01',
+                    'gender'       => 'male',
+                    'phone_number' => '1234567890',
+                    'password'     => Hash::make('password'),
                 ]);
 
-                $newUser->attachRole($role);
+                $user->attachRole($role);
 
-                // Give all permissions to Admin only
                 if ($roleName === 'Admin') {
                     foreach ($permissions as $permission) {
-                        $newUser->attachPermission($permission);
+                        $user->attachPermission($permission);
                     }
+
+                    Admin::create([
+                        'user_id' => $user->id,
+                    ]);
                 }
 
-                // Create related records based on role
-                switch ($roleName) {
-                    case 'Admin':
-                        Admin::create([
-                            'user_id' => $newUser->id,
-                            // add other admin-specific fields if required
-                        ]);
-                        break;
-
-                    case 'Teacher':
-                        Teacher::create([
-                            'user_id'      => $newUser->id,
-                            'joining_date' => now()->toDateString(),
-                            'qualification' => 'MSc',
-                        ]);
-                        break;
-                    case 'Student':
-                        // You need to provide valid student class ID and parent_id
-                        // For seeding, you can get existing parent or create dummy if needed
-                        // Assuming you have StudentClass with id 1 and parent id 1 for example:
-                        Student::create([
-                            'user_id'          => $newUser->id,
-                            'admission_number' => 'ADM123',
-                            'roll_number'      => 'ROLL123',
-                            'class_id'         => 1,   // make sure this exists in your student_classes table
-
-                        ]);
-                    break;
-                        
-                    case 'Parent':
-                        StudentParent::create([
-                            'user_id'       => $newUser->id,
-                            'occupation'    => 'Engineer',
-                            'relation'      => 'Father',
-                            'secondary_phone' => null,
-                            'student_id'        => 1,   // make sure this parent user exists
-                        ]);
-                        break;
-
-                    
-                        
+                if ($roleName === 'Teacher') {
+                    Teacher::create([
+                        'user_id'      => $user->id,
+                        'joining_date' => now()->toDateString(),
+                        'qualification'=> 'MSc',
+                    ]);
                 }
+
+                if ($roleName === 'Student') {
+                    // Get random class_id from student_classes table
+                    $classId = \DB::table('classes')->inRandomOrder()->value('id') ?? 1;
+
+                    $student = Student::create([
+                        'user_id'          => $user->id,
+                        'admission_number' => 'ADM' . rand(1000, 9999),
+                        'roll_number'      => 'ROLL' . rand(1000, 9999),
+                        'class_id'         => $classId,
+                    ]);
+
+                    $studentUsers->push($student);
+                }
+
+                if ($roleName === 'Parent') {
+                    $parentUsers->push($user);
+                }
+            }
+        }
+
+        // Step 3: Assign each parent to a unique student (one-to-one)
+        foreach ($parentUsers as $index => $parentUser) {
+            $student = $studentUsers[$index] ?? null;
+
+            if ($student) {
+                StudentParent::create([
+                    'user_id'        => $parentUser->id,
+                    'occupation'     => 'Engineer',
+                    'relation'       => 'Father',
+                    'secondary_phone'=> null,
+                    'student_id'     => $student->id,
+                ]);
             }
         }
     }

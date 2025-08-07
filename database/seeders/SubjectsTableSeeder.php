@@ -10,7 +10,7 @@ class SubjectsTableSeeder extends Seeder
 {
     public function run(): void
     {
-        $subjects = ['Mathematics', 'English', 'Science', 'Social Studies', 'Hindi', 'Computer'];
+        $subjects = ['Mathematics', 'English', 'Science', 'Social Studies', 'Hindi'];
 
         foreach ($subjects as $subject) {
             Subject::updateOrCreate(

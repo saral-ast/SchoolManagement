@@ -29,6 +29,7 @@ class ScheduleRequest extends FormRequest
             'teacher.*' => 'required|exists:teachers,id',
             'slot.*' => 'required|string',
             'period.*' => 'required|string',
+            'day' => 'required|string|in:Monday,Tuesday,Wednesday,Thursday,Friday',
         ];
     }
 }
