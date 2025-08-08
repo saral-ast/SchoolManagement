@@ -8,6 +8,7 @@ use App\Models\Student;
 use App\Service\StudentService;
 use App\Service\UserService;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class StudentController extends Controller
@@ -141,4 +142,20 @@ class StudentController extends Controller
            ],500);
        }
     }
+
+    public function getStudentsByMultipleClasses(Request $request)
+{
+    $classIds = $request->input('class_ids', []);
+    
+    $students = Student::whereIn('class_id', $classIds)
+        ->with(['user', 'class'])
+        ->orderBy('class_id')
+        // ->orderBy('name')
+        ->get();
+    
+    return response()->json([
+        'students' => $students
+    ]);
+}
+
 }

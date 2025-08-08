@@ -11,6 +11,7 @@ use Database\Seeders\UsersTableSeeder;
 use Database\Seeders\ClassesTableSeeder;
 use Database\Seeders\SubjectsTableSeeder;
 use Database\Seeders\TeacherSubjectSeeder;
+use Database\Seeders\ParentStudentSeeder;
 use Illuminate\Database\Eloquent\Model;
 
 class DatabaseSeeder extends Seeder
@@ -26,7 +27,8 @@ class DatabaseSeeder extends Seeder
             ClassesTableSeeder::class,
             UsersTableSeeder::class,
             SubjectsTableSeeder::class,
-            TeacherSubjectSeeder::class, 
+            TeacherSubjectSeeder::class,
+            ParentStudentSeeder::class,
         ]);
         
         Model::reguard();

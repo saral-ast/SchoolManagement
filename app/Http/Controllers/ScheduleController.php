@@ -38,56 +38,71 @@ class ScheduleController extends Controller
         ];
         $this->totalCount = count($this->totalSlot);
     }   
-    
     public function index(Request $request)
-{
-    $user = Auth::user();
-    $classes = $this->scheduleService->getClasses($user);
-    
-    // Use the properties defined in constructor
-    $weekDays = $this->weekDays;
-    $timeSlots = $this->totalSlot;
-    $scheduleData = []; // This will be organized by class
-    
-    $teachers = Teacher::with(['user', 'appointmentSchedules'])->get();
-    $subjects = Subject::all()->keyBy('id');
-    
-    foreach ($classes as $class) {
-        // Initialize schedule data for this class
-        $scheduleData[$class->id] = [];
+    {
+        $user = Auth::user();
         
-        foreach ($teachers as $teacher) {
-            $schedules = $teacher->appointmentSchedules
-                ->where('metadata.class_id', $class->id);
+        // Get classes based on user type using your service
+        $classes = $this->scheduleService->getClasses($user);
+        
+        // Get class_id from request
+        $classId = $request->query('class_id');
+        
+        // Handle missing class_id - auto-select based on user type
+        if (!$classId && $classes->count() > 0) {
+            $userType = $user->user_type();
             
-            foreach ($schedules as $schedule) {
-                $metadata = $schedule->metadata;
+            switch ($userType) {
+                case 'student':
+                case 'student_parent':
+                    // Auto-select their only available class
+                    $classId = $classes->first()->id;
+                    break;
+                    
+                case 'admin':
+                case 'teacher':
+                    // For admin/teacher, auto-select first class or handle as needed
+                    $classId = $classes->first()->id;
+                    break;
+            }
+        }
+        
+        $weekDays = $this->weekDays;
+        $timeSlots = $this->totalSlot;
+        $scheduleData = [];
+        
+        // Load timetable data if we have a classId
+        if ($classId) {
+            $selectedClass = Classes::findOrFail($classId);
+            
+            $teachers = Teacher::with('user')->get();
+            
+            foreach ($teachers as $teacher) {
+                $schedules = $teacher->appointmentSchedules()
+                    ->where('metadata->class_id', $classId)
+                    ->get();
                 
-                if (!isset($metadata['slot']) || 
-                    !isset($metadata['subject_id']) || 
-                    !isset($metadata['day'])) {
-                    continue;
-                }
-                
-                $slot = $metadata['slot'];
-                $subjectId = $metadata['subject_id'];
-                $dayName = ucfirst($metadata['day']);
-                
-                $subject = $subjects->get($subjectId);
-                if ($subject) {
-                    $scheduleData[$class->id][$slot][$dayName] = [
-                        'subject' => $subject->name,
-                        'teacher' => $teacher->user ? $teacher->user->name : 'N/A',
-                    ];
+                foreach ($schedules as $schedule) {
+                    $metadata = $schedule->metadata;
+                    if (isset($metadata['slot']) && isset($metadata['subject_id']) && isset($metadata['day'])) {
+                        $slot = $metadata['slot'];
+                        $subjectId = $metadata['subject_id'];
+                        $dayName = ucfirst($metadata['day']);
+                        
+                        $subject = Subject::find($subjectId);
+                        if ($subject) {
+                            $scheduleData[$slot][$dayName] = [
+                                'subject' => $subject->name,
+                                'teacher' => $teacher->user ? $teacher->user->name : 'N/A',
+                            ];
+                        }
+                    }
                 }
             }
         }
+
+    return view('time_table.index', compact('classes', 'weekDays', 'timeSlots', 'scheduleData', 'classId'));
     }
-    
-    return view('time_table.index', compact('classes', 'weekDays', 'timeSlots', 'scheduleData'));
-}
-
-
 
 
     public function create()
@@ -140,8 +155,8 @@ class ScheduleController extends Controller
         }     
     }
 
-
-
-    
+    public function example(){
+        $this->scheduleService->getClasses(Auth::user());
+    }
    
 }

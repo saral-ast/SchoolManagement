@@ -4,8 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class TeacherSubject extends Model
+class StudentParentPivot extends Model
 {
     protected $guarded = [];
-   
 }

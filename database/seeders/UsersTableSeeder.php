@@ -27,10 +27,6 @@ class UsersTableSeeder extends Seeder
 
         $permissions = config('roles.models.permission')::all();
 
-        // Collections to keep track of created students and parents
-        $studentUsers = collect();
-        $parentUsers = collect();
-
         foreach ($userRoles as $roleName => $count) {
             $role = config('roles.models.role')::where('name', $roleName)->first();
 
@@ -69,34 +65,22 @@ class UsersTableSeeder extends Seeder
                     // Get random class_id from student_classes table
                     $classId = \DB::table('classes')->inRandomOrder()->value('id') ?? 1;
 
-                    $student = Student::create([
+                    Student::create([
                         'user_id'          => $user->id,
                         'admission_number' => 'ADM' . rand(1000, 9999),
                         'roll_number'      => 'ROLL' . rand(1000, 9999),
                         'class_id'         => $classId,
                     ]);
-
-                    $studentUsers->push($student);
                 }
 
                 if ($roleName === 'Parent') {
-                    $parentUsers->push($user);
+                    StudentParent::create([
+                        'user_id'        => $user->id,
+                        'occupation'     => 'Engineer',
+                        'relation'       => 'Father',
+                        'secondary_phone'=> null,
+                    ]);
                 }
-            }
-        }
-
-        // Step 3: Assign each parent to a unique student (one-to-one)
-        foreach ($parentUsers as $index => $parentUser) {
-            $student = $studentUsers[$index] ?? null;
-
-            if ($student) {
-                StudentParent::create([
-                    'user_id'        => $parentUser->id,
-                    'occupation'     => 'Engineer',
-                    'relation'       => 'Father',
-                    'secondary_phone'=> null,
-                    'student_id'     => $student->id,
-                ]);
             }
         }
     }

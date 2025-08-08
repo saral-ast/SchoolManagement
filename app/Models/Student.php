@@ -15,8 +15,8 @@ class Student extends Model
         return $this->belongsTo(Classes::class);
     }
     
-    public function parent(){
-        return $this->belongsTo(StudentParent::class);
+    public function parents(){
+        return $this->belongsToMany(StudentParent::class, 'student_parent_pivots', 'student_id', 'parent_id');
     }
 
     public function results(){

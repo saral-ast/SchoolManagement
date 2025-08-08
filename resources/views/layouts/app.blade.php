@@ -20,6 +20,8 @@
         <link href="{{ asset('assets/css/black-dashboard.css') }}" rel="stylesheet" />
         <link href="{{ asset('assets/css/theme.css') }}" rel="stylesheet" />
         <link href="{{ asset('assets/css/checkbox-fix.css') }}" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
     </head>
 
     
@@ -106,6 +108,7 @@
         <script src="{{ asset('assets/js/black-dashboard.min.js') }}"></script>
         <script src="{{ asset('assets/js/theme.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/jquery.validation/1.19.5/jquery.validate.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
         @stack('js')

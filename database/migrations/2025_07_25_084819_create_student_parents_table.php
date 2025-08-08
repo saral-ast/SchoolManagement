@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('occupation');
             $table->string('relation');
             $table->string('secondary_phone')->nullable();
-            $table->foreignIdFor(App\Models\Student::class,'student_id')->constrained()->cascadeOnDelete();
+            // $table->foreignIdFor(App\Models\Student::class,'student_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

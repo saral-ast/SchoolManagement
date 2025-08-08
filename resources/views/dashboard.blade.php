@@ -126,22 +126,52 @@
         </div>
     </div>
 
+    <!-- Teacher Schedule Quick View -->
+    @if($userType === 'teacher')
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bg-gradient-info">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5 class="text-white mb-2">Quick Schedule Overview</h5>
+                                <p class="text-white mb-0">View your weekly class schedule and manage your teaching assignments.</p>
+                            </div>
+                            <div class="col-md-4 text-right">
+                                <a href="{{ route('teacher.schedule') }}" class="btn btn-white btn-sm">
+                                    <i class="tim-icons icon-calendar-60"></i> View Full Schedule
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <!-- User Information Section -->
     <div class="row">
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">
-                        @if($userType === 'admin')
-                            Admin Information
-                        @elseif($userType === 'teacher')
-                            Teacher Information
-                        @elseif($userType === 'student')
-                            Student Information
-                        @elseif($userType === 'parent')
-                            Parent Information
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="card-title">
+                            @if($userType === 'admin')
+                                Admin Information
+                            @elseif($userType === 'teacher')
+                                Teacher Information
+                            @elseif($userType === 'student')
+                                Student Information
+                            @elseif($userType === 'parent')
+                                Parent Information
+                            @endif
+                        </h4>
+                        @if($userType === 'teacher')
+                            <a href="{{ route('teacher.schedule') }}" class="btn btn-primary btn-sm">
+                                <i class="tim-icons icon-calendar-60"></i> View My Schedule
+                            </a>
                         @endif
-                    </h4>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

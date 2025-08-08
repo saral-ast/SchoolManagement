@@ -62,7 +62,11 @@ Route::middleware('auth')->group(function(){
     Route::get('/students/{student}',[StudentController::class,'edit'])->name('student.edit')->middleware('permission:edit.students');
     Route::put('/students/{student}',[StudentController::class,'update'])->name('student.update')->middleware('permission:edit.students');
     Route::delete('/students/{student}',[StudentController::class,'destroy'])->name('student.destroy')->middleware('permission:delete.students');
-    Route::get('/classes/{id}/students',[StudentController::class,'getStudents'])->name('classes.students');
+    // Route::get('/classes/{id}/students',[StudentController::class,'getStudents'])->name('classes.students');
+    Route::post('/classes/students/multiple', [StudentController::class, 'getStudentsByMultipleClasses'])
+    ->name('classes.students.multiple');
+
+
     
     Route::get('/results',[ResultController::class,'index'])->name('result.index')->middleware('permission:view.results');
     Route::get('/result/create',[ResultController::class,'create'])->name('result.create')->middleware('permission:create.results');
@@ -76,6 +80,7 @@ Route::middleware('auth')->group(function(){
     Route::get('/time-table/create',[ScheduleController::class,'create'])->name('schedule.create');
     Route::post('/time-table/create',[ScheduleController::class,'store'])->name('schedule.store');
     Route::post('/time-table',[ScheduleController::class,'show'])->name('schedule.index');
+    Route::get('/teacher/schedule',[ScheduleController::class,'teacherSchedule'])->name('teacher.schedule');
 
 
     Route::get('/subject/{id}/teahcers',[ScheduleController::class,'getTeachers'])->name('suject.teachers');

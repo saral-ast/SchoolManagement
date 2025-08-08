@@ -25,10 +25,10 @@ class StudentParentController extends Controller
     }
     public function index()
     {
-        $parents = StudentParent::whereHas('user')->with('user')->paginate(10);
-        // dd($parents);
-        return view('parents.index',compact('parents'));
-        
+        $parents = StudentParent::whereHas('user')
+            ->with(['user', 'students.user', 'students.class'])
+            ->paginate(10);
+        return view('parents.index', compact('parents'));
     }
 
     /**
@@ -74,9 +74,10 @@ class StudentParentController extends Controller
      */
     public function edit(StudentParent $parent)
     {
-        // dd($parent);
         $allClass = Classes::all();
-        return view('parents.edit',compact('parent','allClass'));
+        // Load the associated students with their classes
+        $parent->load(['students.user', 'students.class']);
+        return view('parents.edit', compact('parent', 'allClass'));
     }
 
     /**
