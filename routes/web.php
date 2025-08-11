@@ -62,7 +62,8 @@ Route::middleware('auth')->group(function(){
     Route::get('/students/{student}',[StudentController::class,'edit'])->name('student.edit')->middleware('permission:edit.students');
     Route::put('/students/{student}',[StudentController::class,'update'])->name('student.update')->middleware('permission:edit.students');
     Route::delete('/students/{student}',[StudentController::class,'destroy'])->name('student.destroy')->middleware('permission:delete.students');
-    // Route::get('/classes/{id}/students',[StudentController::class,'getStudents'])->name('classes.students');
+    
+    Route::get('/classes/{id}/students',[StudentController::class,'getStudents'])->name('classes.students');
     Route::post('/classes/students/multiple', [StudentController::class, 'getStudentsByMultipleClasses'])
     ->name('classes.students.multiple');
 

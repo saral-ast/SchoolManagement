@@ -45,7 +45,7 @@ class ScheduleService
                 break;
                 
             default:
-                // Handle unexpected user types
+               
                 dd('Invalid user type');
                 break;
         }
@@ -57,20 +57,20 @@ class ScheduleService
     {
         $start = Carbon::parse($start_date);
         $end = Carbon::parse($end_date);
-        $weekday = strtolower($weekday); // e.g., 'monday', 'tuesday'
+        $weekday = strtolower($weekday); 
         
         $availableTeachers = $teachers->filter(function($teacher) use($start, $end, $start_time, $end_time, $weekday) {
             
             for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
-                // Only check dates that match the target weekday
+                
                 if (strtolower($date->format('l')) === $weekday) {
                     if (!$teacher->isAvailableAt($date->toDateString(), $start_time, $end_time)) {
-                        return false; // Teacher unavailable on this specific weekday/time → exclude
+                        return false; 
                     }
                 }
             }
             
-            return true; // Teacher available for all instances of the weekday in range
+            return true; 
         })->values();
         
         return $availableTeachers;

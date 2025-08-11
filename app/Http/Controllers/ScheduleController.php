@@ -39,70 +39,59 @@ class ScheduleController extends Controller
         $this->totalCount = count($this->totalSlot);
     }   
     public function index(Request $request)
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
+    
+    // Get classes with eager loaded schedule data
+    $classes = $this->scheduleService->getClasses($user);
+    
+    $weekDays = $this->weekDays;
+    $timeSlots = $this->totalSlot;
+    $scheduleData = [];
+    
+    if ($classes->count() > 0) {
+        $classIds = $classes->pluck('id')->toArray();
         
-        // Get classes based on user type using your service
-        $classes = $this->scheduleService->getClasses($user);
+        // Eager load all necessary relationships in one query
+        $teachers = Teacher::with(['user', 'appointmentSchedules' => function ($query) use ($classIds) {
+            $query->whereIn('metadata->class_id', $classIds)
+                  ->whereNotNull('metadata->slot')
+                  ->whereNotNull('metadata->subject_id')
+                  ->whereNotNull('metadata->day');
+        }])->whereHas('appointmentSchedules', function ($query) use ($classIds) {
+            $query->whereIn('metadata->class_id', $classIds);
+        })->get();
         
-        // Get class_id from request
-        $classId = $request->query('class_id');
+        // Pre-load all subjects to avoid N+1 queries
+        $subjectIds = $teachers->flatMap(function ($teacher) {
+            return $teacher->appointmentSchedules->pluck('metadata.subject_id');
+        })->filter()->unique();
         
-        // Handle missing class_id - auto-select based on user type
-        if (!$classId && $classes->count() > 0) {
-            $userType = $user->user_type();
-            
-            switch ($userType) {
-                case 'student':
-                case 'student_parent':
-                    // Auto-select their only available class
-                    $classId = $classes->first()->id;
-                    break;
-                    
-                case 'admin':
-                case 'teacher':
-                    // For admin/teacher, auto-select first class or handle as needed
-                    $classId = $classes->first()->id;
-                    break;
-            }
-        }
+        $subjects = Subject::whereIn('id', $subjectIds)->pluck('name', 'id');
         
-        $weekDays = $this->weekDays;
-        $timeSlots = $this->totalSlot;
-        $scheduleData = [];
-        
-        // Load timetable data if we have a classId
-        if ($classId) {
-            $selectedClass = Classes::findOrFail($classId);
-            
-            $teachers = Teacher::with('user')->get();
-            
-            foreach ($teachers as $teacher) {
-                $schedules = $teacher->appointmentSchedules()
-                    ->where('metadata->class_id', $classId)
-                    ->get();
+        // Build schedule data efficiently
+        foreach ($teachers as $teacher) {
+            foreach ($teacher->appointmentSchedules as $schedule) {
+                $metadata = $schedule->metadata;
+                $classId = $metadata['class_id'];
+                $subjectId = $metadata['subject_id'];
                 
-                foreach ($schedules as $schedule) {
-                    $metadata = $schedule->metadata;
-                    if (isset($metadata['slot']) && isset($metadata['subject_id']) && isset($metadata['day'])) {
-                        $slot = $metadata['slot'];
-                        $subjectId = $metadata['subject_id'];
-                        $dayName = ucfirst($metadata['day']);
-                        
-                        $subject = Subject::find($subjectId);
-                        if ($subject) {
-                            $scheduleData[$slot][$dayName] = [
-                                'subject' => $subject->name,
-                                'teacher' => $teacher->user ? $teacher->user->name : 'N/A',
-                            ];
-                        }
-                    }
+                if (isset($subjects[$subjectId])) {
+                    $scheduleData[$classId][] = [
+                        'class_id' => $classId,
+                        'slot' => $metadata['slot'],
+                        'day' => ucfirst($metadata['day']),
+                        'subject' => $subjects[$subjectId],
+                        'teacher' => $teacher->user ? $teacher->user->name : 'N/A',
+                    ];
                 }
             }
         }
-
-    return view('time_table.index', compact('classes', 'weekDays', 'timeSlots', 'scheduleData', 'classId'));
     }
+
+    return view('time_table.index', compact('classes', 'weekDays', 'timeSlots', 'scheduleData'));
+    }
+
 
 
     public function create()

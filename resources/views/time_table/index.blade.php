@@ -31,10 +31,9 @@
 
                                     @foreach($weekDays as $day)
                                         @php
-                                           if($scheduleData){
-                                                 $record = $scheduleData?->first(function ($item) use ($class, $slot, $day) {
-                                                return $item['class_id'] == $class->id 
-                                                    && $item['slot'] == $slot->name 
+                                           if($scheduleData && isset($scheduleData[$class->id])){
+                                                 $record = collect($scheduleData[$class->id])->first(function ($item) use ($slot, $day) {
+                                                return $item['slot'] == $slot->name 
                                                     && strtolower($item['day']) == strtolower($day->name);
                                             });
                                            } else {
