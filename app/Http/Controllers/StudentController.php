@@ -144,18 +144,17 @@ class StudentController extends Controller
     }
 
     public function getStudentsByMultipleClasses(Request $request)
-{
-    $classIds = $request->input('class_ids', []);
-    
-    $students = Student::whereIn('class_id', $classIds)
-        ->with(['user', 'class'])
-        ->orderBy('class_id')
-        // ->orderBy('name')
-        ->get();
-    
-    return response()->json([
-        'students' => $students
-    ]);
-}
+    {
+        $classIds = $request->input('class_ids', []);
+        
+        $students = Student::whereIn('class_id', $classIds)
+            ->with(['user', 'class'])
+            ->orderBy('class_id')
+            ->get();
+        
+        return response()->json([
+            'students' => $students
+        ]);
+    }
 
 }

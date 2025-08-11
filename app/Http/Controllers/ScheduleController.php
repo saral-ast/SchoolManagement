@@ -44,7 +44,6 @@ class ScheduleController extends Controller
     {
         $user = Auth::user();
         
-        // Get week parameter - expecting format like "2025-W06" (HTML input type="week")
         $weekParam = $request->get('week');
 
         // Parse ISO week-year safely and fall back to current ISO week if invalid/missing
@@ -79,15 +78,47 @@ class ScheduleController extends Controller
                     ->whereNotNull('metadata->slot')
                     ->whereNotNull('metadata->subject_id')
                     ->whereNotNull('metadata->day')
-                    // Schedule should be active during the selected week
+                    // Schedule should be active during the selected week (including proxy schedules)
                     ->where(function ($q) use ($weekStart, $weekEnd) {
-                        $q->whereDate('start_date', '<=', $weekEnd)
-                            ->whereDate('end_date', '>=', $weekStart);
+                        $q->where(function ($subQ) use ($weekStart, $weekEnd) {
+                            $subQ->whereDate('start_date', '<=', $weekEnd)
+                                ->whereDate('end_date', '>=', $weekStart);
+                        })
+                        // Also include schedules that start and end on the same day within the week
+                        ->orWhere(function ($subQ) use ($weekStart, $weekEnd) {
+                            $subQ->whereDate('start_date', '>=', $weekStart)
+                                ->whereDate('start_date', '<=', $weekEnd)
+                                ->whereDate('end_date', '>=', $weekStart)
+                                ->whereDate('end_date', '<=', $weekEnd);
+                        })
+                        // Include proxy schedules that have target_date within the week
+                        ->orWhere(function ($subQ) use ($weekStart, $weekEnd) {
+                            $subQ->whereJsonContains('metadata->proxy', true)
+                                ->whereJsonLength('metadata->target_date', '>', 0)
+                                ->whereRaw("JSON_EXTRACT(metadata, '$.target_date') >= ?", [$weekStart->format('Y-m-d')])
+                                ->whereRaw("JSON_EXTRACT(metadata, '$.target_date') <= ?", [$weekEnd->format('Y-m-d')]);
+                        });
                     });
             }])->whereHas('appointmentSchedules', function ($query) use ($classIds, $weekStart, $weekEnd) {
                 $query->whereIn('metadata->class_id', $classIds)
-                    ->whereDate('start_date', '<=', $weekEnd)
-                    ->whereDate('end_date', '>=', $weekStart);
+                    ->where(function ($q) use ($weekStart, $weekEnd) {
+                        $q->where(function ($subQ) use ($weekStart, $weekEnd) {
+                            $subQ->whereDate('start_date', '<=', $weekEnd)
+                                ->whereDate('end_date', '>=', $weekStart);
+                        })
+                        ->orWhere(function ($subQ) use ($weekStart, $weekEnd) {
+                            $subQ->whereDate('start_date', '>=', $weekStart)
+                                ->whereDate('start_date', '<=', $weekEnd)
+                                ->whereDate('end_date', '>=', $weekStart)
+                                ->whereDate('end_date', '<=', $weekEnd);
+                        })
+                        ->orWhere(function ($subQ) use ($weekStart, $weekEnd) {
+                            $subQ->whereJsonContains('metadata->proxy', true)
+                                ->whereJsonLength('metadata->target_date', '>', 0)
+                                ->whereRaw("JSON_EXTRACT(metadata, '$.target_date') >= ?", [$weekStart->format('Y-m-d')])
+                                ->whereRaw("JSON_EXTRACT(metadata, '$.target_date') <= ?", [$weekEnd->format('Y-m-d')]);
+                        });
+                    });
             })->get();
             
             // Pre-load all subjects to avoid N+1 queries
@@ -110,10 +141,16 @@ class ScheduleController extends Controller
                             'slot' => $metadata['slot'],
                             'day' => ucfirst($metadata['day']),
                             'subject' => $subjects[$subjectId],
+                            'subject_id' => $subjectId,
+                            'teacher_id' => $teacher->id,
+                            'schedule_id' => $schedule->id,
                             'teacher' => $teacher->user ? $teacher->user->name : 'N/A',
                             'start_date' => $schedule->start_date,
                             'end_date' => $schedule->end_date,
+                            'proxy' => isset($metadata['proxy']) ? $metadata['proxy'] : false
                         ];
+                        
+                     
                     }
                 }
             }
@@ -143,6 +180,96 @@ class ScheduleController extends Controller
         ));
     }
 
+    public function edit(Request $request)
+    {
+        $user = Auth::user();
+        if ($user->user_type() !== 'admin') {
+            return redirect()->route('schedule.index')->with('error', 'Unauthorized');
+        }
+
+        $validated = $request->validate([
+            'schedule_id' => 'required|integer',
+            'date' => 'nullable|date',
+        ]);
+
+        $schedule = \Zap\Models\Schedule::findOrFail($validated['schedule_id']);
+        $metadata = $schedule->metadata;
+
+        $class = Classes::findOrFail($metadata['class_id']);
+        $subject = Subject::findOrFail($metadata['subject_id']);
+
+        $allTeachers = Teacher::with('user')
+            ->whereHas('subjects', function ($q) use ($metadata) {
+                $q->where('subjects.id', $metadata['subject_id']);
+            })->get();
+
+        // Determine overall start/end across all fragments of this slot
+        $overall = \Zap\Models\Schedule::where('metadata->class_id', $metadata['class_id'])
+            ->where('metadata->subject_id', $metadata['subject_id'])
+            ->where('metadata->slot', $metadata['slot'])
+            ->where('metadata->day', $metadata['day'])
+            ->orderBy('start_date')
+            ->get(['start_date','end_date']);
+
+        return view('time_table.edit', [
+            'class' => $class,
+            'subject' => $subject,
+            'totalSlot' => $this->totalSlot,
+            'allTeachers' => $allTeachers,
+            'schedule' => $schedule,
+            'metadata' => $metadata,
+            'overallStartDate' => optional($overall->min('start_date'))->format('Y-m-d'),
+            'overallEndDate' => optional($overall->max('end_date'))->format('Y-m-d'),
+            'clickedDate' => $validated['date'] ?? null,
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        $user = Auth::user();
+        if ($user->user_type() !== 'admin') {
+            return redirect()->route('schedule.index')->with('error', 'Unauthorized');
+        }
+
+        $data = $request->validate([
+            'schedule_id' => 'required|integer',
+            'proxy_teacher_id' => 'required|integer|exists:teachers,id',
+            'date' => 'required|date',
+        ]);
+
+        $schedule = \Zap\Models\Schedule::findOrFail($data['schedule_id']);
+        $metadata = $schedule->metadata;
+        $weekday = strtolower($metadata['day']);
+
+        $selectedDate = Carbon::parse($data['date']);
+        if (strtolower($selectedDate->format('l')) !== $weekday) {
+            return back()->withInput()->with('error', "Selected date must be a {$weekday}.");
+        }
+
+        if ((int)$data['proxy_teacher_id'] === (int)$schedule->schedulable_id) {
+            return back()->withInput()->with('error', 'Proxy teacher cannot be the same as the original teacher.');
+        }
+
+        // Ensure proxy teacher can teach this subject
+        $proxyTeacher = Teacher::findOrFail($data['proxy_teacher_id']);
+        if (!$proxyTeacher->subjects()->where('subjects.id', $metadata['subject_id'])->exists()) {
+            return back()->withInput()->with('error', 'Selected proxy teacher cannot teach this subject.');
+        }
+
+        DB::beginTransaction();
+        try {
+            $this->scheduleService->splitAppointmentForOneDay(
+                (int) $data['schedule_id'],
+                (string) $data['date'],
+                (int) $data['proxy_teacher_id']
+            );
+            DB::commit();
+            return redirect()->route('schedule.index')->with('success', 'Schedule updated for the selected day.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return back()->withInput()->with('error', $e->getMessage() ?: 'Failed to update schedule.');
+        }
+    }
 
 
     public function create()

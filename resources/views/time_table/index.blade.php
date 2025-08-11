@@ -40,17 +40,6 @@
         </div>
 
         @forelse($classes as $class)
-            <div class="class-timetable mb-5">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0">{{ $class->name }} - Weekly Schedule</h5>
-                    <small class="text-muted">
-                        @if(isset($scheduleData[$class->id]))
-                            {{ count($scheduleData[$class->id]) }} classes scheduled
-                        @else
-                            No classes scheduled
-                        @endif
-                    </small>
-                </div>
                 
                 <div class="table-responsive">
                     <table class="table table-bordered">
@@ -74,8 +63,25 @@
                                         @php
                                            if($scheduleData && isset($scheduleData[$class->id])){
                                                  $record = collect($scheduleData[$class->id])->first(function ($item) use ($slot, $day) {
-                                                    return $item['slot'] == $slot->name 
-                                                        && strtolower($item['day']) == strtolower($day->name);
+                                                    $slotMatch = $item['slot'] == $slot->name;
+                                                    $dayMatch = strtolower($item['day']) == strtolower($day->name);
+                                                    
+                                                    if (!$slotMatch || !$dayMatch) {
+                                                        return false;
+                                                    }
+                                                    
+                                                    // For proxy schedules, show only on the exact start_date
+                                                    if (isset($item['proxy']) && $item['proxy']) {
+                                                        $targetDate = \Carbon\Carbon::parse($item['start_date'])->format('Y-m-d');
+                                                        $dayDateStr = $day->date->format('Y-m-d');
+                                                        return $dayDateStr === $targetDate;
+                                                    }
+                                                    
+                                                    // For regular schedules, check if the date falls within the schedule range
+                                                    $scheduleStart = \Carbon\Carbon::parse($item['start_date']);
+                                                    $scheduleEnd = \Carbon\Carbon::parse($item['end_date']);
+                                                    $dayDate = $day->date;
+                                                    return $dayDate->between($scheduleStart, $scheduleEnd);
                                                 });
                                            } else {
                                               $record = null;
@@ -84,16 +90,29 @@
 
                                         <td class="schedule-cell" style="min-height: 80px;">
                                             @if($record)
-                                                <div class="schedule-info p-2 rounded">
-                                                    <div class="mb-1">{{ $record['subject'] }}</div>
-                                                    <div class="text-muted small mb-1">
-                                                        <i class="fas fa-user"></i> {{ $record['teacher'] }}
+                                                <div class="schedule-info p-2 rounded d-flex justify-content-between align-items-start">
+                                                    <div>
+                                                        <div class="mb-1">{{ $record['subject'] }}</div>
+                                                        <div class="text-muted small mb-1">
+                                                            <i class="fas fa-user"></i> {{ $record['teacher'] }}
+                                                            @if(isset($record['proxy']) && $record['proxy'])
+                                                                <span class="badge badge-warning" style="font-size: 0.7em;">Proxy</span>
+                                                            @endif
+                                                        </div>
+                                                        <div class="small text-muted">
+                                                            <i class="fas fa-calendar"></i>
+                                                            {{ \Carbon\Carbon::parse($record['start_date'])->format('M j') }} - 
+                                                            {{ \Carbon\Carbon::parse($record['end_date'])->format('M j') }}
+                                                        </div>
                                                     </div>
-                                                    <div class="small text-muted">
-                                                        <i class="fas fa-calendar"></i>
-                                                        {{ \Carbon\Carbon::parse($record['start_date'])->format('M j') }} - 
-                                                        {{ \Carbon\Carbon::parse($record['end_date'])->format('M j') }}
-                                                    </div>
+                                                    @if(auth()->user() && auth()->user()->user_type() === 'admin')
+                                                        <a class="text-warning ms-2" title="Edit" href="{{ route('schedule.edit', [
+                                                            'schedule_id' => $record['schedule_id'],
+                                                            'date' => $day->date->format('Y-m-d')
+                                                        ]) }}">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                    @endif
                                                 </div>
                                             @else
                                                 <div class="text-center text-muted py-3">

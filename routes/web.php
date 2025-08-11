@@ -80,12 +80,13 @@ Route::middleware('auth')->group(function(){
     Route::get('/time-table',[ScheduleController::class,'index'])->name('schedule.index');
     Route::get('/time-table/create',[ScheduleController::class,'create'])->name('schedule.create');
     Route::post('/time-table/create',[ScheduleController::class,'store'])->name('schedule.store');
+    Route::get('/time-table/edit',[ScheduleController::class,'edit'])->name('schedule.edit');
+    Route::post('/time-table/update',[ScheduleController::class,'update'])->name('schedule.update');
     Route::post('/time-table',[ScheduleController::class,'show'])->name('schedule.index');
     Route::get('/teacher/schedule',[ScheduleController::class,'teacherSchedule'])->name('teacher.schedule');
 
 
     Route::get('/subject/{id}/teahcers',[ScheduleController::class,'getTeachers'])->name('suject.teachers');
-
 
 });
 
