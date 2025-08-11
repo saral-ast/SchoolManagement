@@ -34,13 +34,16 @@ class ConnectRelationshipsSeeder extends Seeder
                 'create.results',
                 'edit.results',
                 'view.parents',
+                'view.schedules',
             ],
             'Parent' => [
                 'view.students',
                 'view.results',
+                'view.schedules',
             ],
             'Student' => [
                 'view.results',
+                'view.schedules',
             ],
         ];
 

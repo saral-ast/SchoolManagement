@@ -38,8 +38,9 @@ class ScheduleService
                 
             case 'student_parent':
                 $parent = $user->student_parent()->first();
-                if ($parent && $parent->student) {
-                    return Classes::where('id', $parent->student->class_id)->get();
+                if ($parent && $parent->students) {
+                    $classIds =  $parent->students->pluck('class_id')->unique();
+                    return Classes::whereIn('id',$classIds)->get();
                 }
                 break;
                 

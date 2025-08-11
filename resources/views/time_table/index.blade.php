@@ -9,6 +9,7 @@
 
     <div class="card-body">
         @forelse($classes as $class)
+        {{-- @dd($class) --}}
             <div class="class-timetable mb-5">
                 <h5 class="text-info mb-3">{{ $class->name }} - Time Table</h5>
                 
@@ -18,6 +19,7 @@
                             <tr>
                                 <th>Time Slot</th>
                                 @foreach($weekDays as $day)
+                                {{-- @dd($day) --}}
                                     <th>{{ ucfirst($day->name) }}</th>
                                 @endforeach
                             </tr>
@@ -29,11 +31,17 @@
 
                                     @foreach($weekDays as $day)
                                         @php
-                                            $record = $scheduleData->first(function ($item) use ($class, $slot, $day) {
-                                                return $item['class_id'] == $class->id
-                                                    && $item['slot'] == $slot->name
+                                           if($scheduleData){
+                                                 $record = $scheduleData?->first(function ($item) use ($class, $slot, $day) {
+                                                return $item['class_id'] == $class->id 
+                                                    && $item['slot'] == $slot->name 
                                                     && strtolower($item['day']) == strtolower($day->name);
                                             });
+                                           } else {
+                                              $record = null;
+                                           }
+                                           
+
                                         @endphp
 
                                         <td class="schedule-cell">
