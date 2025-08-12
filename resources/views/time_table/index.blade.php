@@ -77,14 +77,12 @@
                                                         return false;
                                                     }
                                                     
-                                                    // For proxy schedules, show only on the exact start_date
                                                     if (isset($item['proxy']) && $item['proxy']) {
                                                         $targetDate = \Carbon\Carbon::parse($item['start_date'])->format('Y-m-d');
                                                         $dayDateStr = $day->date->format('Y-m-d');
                                                         return $dayDateStr === $targetDate;
                                                     }
                                                     
-                                                    // For regular schedules, check if the date falls within the schedule range
                                                     $scheduleStart = \Carbon\Carbon::parse($item['start_date']);
                                                     $scheduleEnd = \Carbon\Carbon::parse($item['end_date']);
                                                     $dayDate = $day->date;

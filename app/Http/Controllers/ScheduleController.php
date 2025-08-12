@@ -134,11 +134,6 @@ class ScheduleController extends Controller
         $class = Classes::findOrFail($metadata['class_id']);
         $subject = Subject::findOrFail($metadata['subject_id']);
 
-        $allTeachers = Teacher::with('user')
-            ->whereHas('subjects', function ($q) use ($metadata) {
-                $q->where('subjects.id', $metadata['subject_id']);
-            })->get();
-
         $overall = Schedule::where('metadata->class_id', $metadata['class_id'])
             ->where('metadata->subject_id', $metadata['subject_id'])
             ->where('metadata->slot', $metadata['slot'])
@@ -149,8 +144,6 @@ class ScheduleController extends Controller
         return view('time_table.edit', [
             'class' => $class,
             'subject' => $subject,
-            'totalSlot' => $this->totalSlot,
-            'allTeachers' => $allTeachers,
             'schedule' => $schedule,
             'metadata' => $metadata,
             'overallStartDate' => optional($overall->min('start_date'))->format('Y-m-d'),
