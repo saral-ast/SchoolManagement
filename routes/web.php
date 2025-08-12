@@ -24,14 +24,14 @@ Route::middleware('auth')->group(function(){
         return redirect()->route('dashboard');
     })->name('home');
     Route::get('/dashboard',[DashboardController::class,'dashboard'])->name('dashboard');
-    //auth route 
+    //auth route
     Route::post('/logout',[AuthController::class,'logout'])->name('logout');
 
     //profile and password routes
     Route::get('/profile/edit', [ProfileController::class,'profile'])->name('profile.edit');
     Route::put('/profile/update',[ProfileController::class,'update'])->name('profile.update');
     Route::put('/profile/change_password',[ProfileController::class,'change_password'])->name('profile.change_password');
-  
+
 
     Route::get('/admin',[AdminController::class,'index'])->name('admin.index')->middleware('permission:view.admins');
     Route::get('/admin/create',[AdminController::class,'create'])->name('admin.create')->middleware('permission:create.admins');
@@ -47,12 +47,15 @@ Route::middleware('auth')->group(function(){
     Route::get('/teachers/{teacher}',[TeacherController::class,'edit'])->name('teacher.edit')->middleware('permission:edit.teachers');
     Route::put('/teachers/{teacher}',[TeacherController::class,'update'])->name('teacher.update')->middleware('permission:edit.teachers');
     Route::delete('/teachers/{teacher}',[TeacherController::class,'destroy'])->name('teacher.destroy')->middleware('permission:delete.teachers');
-    
+
 
     Route::get('/parents',[StudentParentController::class,'index'])->name('parent.index')->middleware('permission:view.parents');
+    // Place static routes before dynamic to avoid collisions
     Route::get('/parents/create',[StudentParentController::class,'create'])->name('parent.create')->middleware('permission:create.parents');
     Route::post('/parents/create',[StudentParentController::class,'store'])->name('parent.store')->middleware('permission:create.parents');
-    Route::get('/parents/{parent}',[StudentParentController::class,'edit'])->name('parent.edit')->middleware('permission:edit.parents');
+    // Show must be unique from edit
+    Route::get('/parents/{parent}',[StudentParentController::class,'show'])->name('parent.show')->middleware('permission:view.parents');
+    Route::get('/parents/{parent}/edit',[StudentParentController::class,'edit'])->name('parent.edit')->middleware('permission:edit.parents');
     Route::put('/parents/{parent}',[StudentParentController::class,'update'])->name('parent.update')->middleware('permission:edit.parents');
     Route::delete('/parents/{parent}',[StudentParentController::class,'destroy'])->name('parent.destroy')->middleware('permission:delete.parents');
 
@@ -62,13 +65,13 @@ Route::middleware('auth')->group(function(){
     Route::get('/students/{student}',[StudentController::class,'edit'])->name('student.edit')->middleware('permission:edit.students');
     Route::put('/students/{student}',[StudentController::class,'update'])->name('student.update')->middleware('permission:edit.students');
     Route::delete('/students/{student}',[StudentController::class,'destroy'])->name('student.destroy')->middleware('permission:delete.students');
-    
+
     Route::get('/classes/{id}/students',[StudentController::class,'getStudents'])->name('classes.students');
     Route::post('/classes/students/multiple', [StudentController::class, 'getStudentsByMultipleClasses'])
     ->name('classes.students.multiple');
 
 
-    
+
     Route::get('/results',[ResultController::class,'index'])->name('result.index')->middleware('permission:view.results');
     Route::get('/result/create',[ResultController::class,'create'])->name('result.create')->middleware('permission:create.results');
     Route::post('/result/create',[ResultController::class,'store'])->name('result.store')->middleware('permission:create.results');
@@ -90,36 +93,6 @@ Route::middleware('auth')->group(function(){
 
 });
 
-
 Route::get('/register',function(){
     return view('auth.register');
 })->name('register');
-
-
-
-
-
-
-
-// Route::get('/pages/icons',function(){
-//     return view('pages.icons');
-// })->name('pages.icons');
-
-
-// Route::get('/pages/maps',function(){
-//     return view('pages.maps');
-// })->name('pages.maps');
-
-
-// Route::get('/pages/notification',function(){
-//     return view('pages.notifications');
-// })->name('pages.notifications');
-
-// Route::get('/pages/tables',function(){
-//     return view('pages.tables');
-// })->name('pages.tables');
-
-
-// Route::get('/pages/maps',function(){
-//     return view('pages.typography');
-// })->name('pages.typography');

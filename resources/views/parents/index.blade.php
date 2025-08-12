@@ -24,16 +24,11 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th>Type</th>
                                 <th>Address</th>
                                 <th>Birth Date</th>
                                 <th>Gender</th>
                                 <th>Phone Number</th>
-                                <th>Creation Date</th>
-                                <th>Occupation</th>   
-                                <th>Relation</th>
-                                <th>Secondary Phone</th>
-                                <th>Students</th>
+                                <th>Occupation</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -42,55 +37,46 @@
                             <tr>
                                 <td>{{ $parent->user->name }}</td>
                                 <td><a href="mailto:{{ $parent->user->email }}">{{ $parent->user->email }}</a></td>
-                                <td>{{$parent->user->user_type()}}</td>
                                 <td>{{$parent->user->address}}</td>
                                 <td>{{$parent->user->birth_date}}</td>
                                 <td>{{$parent->user->gender}}</td>
                                 <td>{{$parent->user->phone_number}}</td>
-                                <td>{{$parent->user->created_at}}</td>
                                 <td>{{$parent->occupation}}</td>
-                                <td>{{$parent->relation}}</td>
-                                <td>{{$parent->secondary_phone}}</td>
-                                <td>
-                                    @if($parent->students && $parent->students->count() > 0)
-                                        @foreach($parent->students as $student)
-                                            <span class="badge mr-1 mb-1">
-                                                {{ $student->user->name }} ({{ $student->class->name }})
-                                            </span>
-                                        @endforeach
-                                    @else
-                                        <span class="text-muted">No students assigned</span>
-                                    @endif
-                                </td>
-                                
+
                                 <td class="text-right">
-                                @permission('edit.parents' || 'delete.parents')
+{{--                                @permission('edit.parents' || 'delete.parents')--}}
                                 <div class="dropdown">
                                     <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <i class="fas fa-ellipsis-v"></i>
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                        <a class="dropdown-item" href="{{ route('parent.show',$parent->id) }}"><i class="tim-icons icon-bullet-list-67"></i>View Details</a>
                                         @permission('edit.parents')
-                                        <a class="dropdown-item" href="{{ route('parent.edit', $parent->id) }}">Edit</a>
+                                        <a class="dropdown-item" href="{{ route('parent.edit', $parent->id) }}"><i class="tim-icons icon-pencil"></i>
+                                        Edit</a>
                                         @endpermission
+
+
                                         @permission('delete.parents')
                                         <form action="{{ route('parent.destroy', $parent->id) }}" method="POST">
                                             @csrf
                                             @method('delete')
-                                            <button class="dropdown-item">delete</button>
+
+                                            <button class="dropdown-item"><i class="tim-icons icon-simple-remove"></i>
+                                                delete</button>
                                         </form>
                                         @endpermission
                                     </div>
                                 </div>
-                                @endpermission
-                            </td>      
+{{--                                @endpermission--}}
+                            </td>
                         </tr>
                           @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
-         {{ $parents->links() }}   
+         {{ $parents->links() }}
         </div>
     </div>
 @endsection

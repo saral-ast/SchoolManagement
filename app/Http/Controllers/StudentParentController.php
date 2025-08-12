@@ -31,6 +31,11 @@ class StudentParentController extends Controller
         return view('parents.index', compact('parents'));
     }
 
+    public function show(StudentParent $parent)
+    {
+        return view('parents.show', compact('parent'));
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -58,8 +63,8 @@ class StudentParentController extends Controller
 
             DB::commit();
             return redirect()->route('parent.index')->with('status','Parent Created SuccessFully');
-                
-            
+
+
         }   catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
@@ -88,17 +93,17 @@ class StudentParentController extends Controller
         // dd($request->all());
         DB::beginTransaction();
         try {
-            $validated = $request->validated();          
+            $validated = $request->validated();
 
             $user = $parent->user;
-            $this->userService->update( $validated,$user); 
+            $this->userService->update( $validated,$user);
             $this->parentService->update($validated,$parent);
-           
+
 
             DB::commit();
             return redirect()->route('parent.index')->with('status','Parent Updated SuccessFully');
-                
-            
+
+
         }   catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
@@ -119,7 +124,7 @@ class StudentParentController extends Controller
             $this->userService->destroy($user);
             DB::commit();
             return redirect()->route('parent.index')->with('status', 'Parent deleted successfully');
- 
+
         } catch (Exception $e) {
              DB::rollBack();
             return redirect()->back()

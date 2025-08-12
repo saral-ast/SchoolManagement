@@ -24,45 +24,46 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th>Type</th>
+{{--                                <th>Type</th>--}}
                                 <th>Address</th>
                                 <th>Birth Date</th>
                                 <th>Gender</th>
                                 <th>Phone Number</th>
-                                <th>Creation Date</th>
-                                <th>Joining Date</th>   
-                                <th>Qualification</th>
-                                <th>Subjects</th>
+{{--                                <th>Creation Date</th>--}}
+{{--                                <th>Joining Date</th>   --}}
+{{--                                <th>Qualification</th>--}}
+{{--                                <th>Subjects</th>--}}
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             <!-- Example user row -->
                               @foreach($teachers as $teacher)
-                            <tr>
-                                   
+                                  <tr>
+
                                     <td>{{ $teacher->user->name }}</td>
                                     <td><a href="mailto:{{ $teacher->user->email }}">{{ $teacher->user->email }}</a></td>
-                                    <td>{{$teacher->user->user_type()}}</td>
+{{--                                    <td>{{$teacher->user->user_type()}}</td>--}}
                                     <td>{{$teacher->user->address}}</td>
                                     <td>{{$teacher->user->birth_date}}</td>
                                     <td>{{$teacher->user->gender}}</td>
                                     <td>{{$teacher->user->phone_number}}</td>
-                                    <td>{{$teacher->user->created_at}}</td>
-                                    <td>{{$teacher->joining_date}}</td>
-                                    <td>{{$teacher->qualification}}</td>
-                                    <td>
-                                        @foreach ($teacher->subjects as $subject)
-                                          {{ $subject->name }} |
-                                        @endforeach
-                                    </td>
-                                   
+{{--                                    <td>{{$teacher->user->created_at}}</td>--}}
+{{--                                    <td>{{$teacher->joining_date}}</td>--}}
+{{--                                    <td>{{$teacher->qualification}}</td>--}}
+{{--                                    <td>--}}
+{{--                                        @foreach ($teacher->subjects as $subject)--}}
+{{--                                          {{ $subject->name }} |--}}
+{{--                                        @endforeach--}}
+{{--                                    </td>--}}
+
                                     <td class="text-right">
                                     <div class="dropdown">
                                         <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <i class="fas fa-ellipsis-v"></i>
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                            <a class="dropdown-item" href=""><i class="tim-icons icon-bullet-list-67"></i>View Details</a>
                                             @permission('edit.teachers')
                                             <a class="dropdown-item" href="{{ route('teacher.edit', $teacher->id) }}">Edit</a>
                                             @endpermission
@@ -75,15 +76,15 @@
                                             @endpermission
                                         </div>
                                     </div>
-                                </td>      
+                                </td>
                             </tr>
                               @endforeach
-                            <!-- Repeat for other users -->
+
                         </tbody>
                     </table>
                 </div>
             </div>
-           {{ $teachers->links() }} 
+           {{ $teachers->links() }}
         </div>
     </div>
 @endsection

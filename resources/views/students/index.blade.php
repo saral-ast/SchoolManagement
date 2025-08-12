@@ -24,15 +24,15 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th>Type</th>
+{{--                                <th>Type</th>--}}
                                 <th>Address</th>
                                 <th>Birth Date</th>
                                 <th>Gender</th>
                                 <th>Phone Number</th>
-                                <th>Creation Date</th>
+{{--                                <th>Creation Date</th>--}}
                                 <th>Admission Number</th>
                                 <th>Roll Number</th>
-                                <th>Class</th>
+{{--                                <th>Class</th>--}}
                                 <th></th>
                             </tr>
                         </thead>
@@ -40,19 +40,19 @@
                             <!-- Example user row -->
                               @foreach($students as $student)
                             <tr>
-                                    
+
                                     <td>{{ $student->user->name }}</td>
                                     <td><a href="mailto:{{ $student->user->email }}">{{ $student->user->email }}</a></td>
-                                    <td>{{$student->user->user_type()}}</td>
+{{--                                    <td>{{$student->user->user_type()}}</td>--}}
                                     <td>{{$student->user->address}}</td>
                                     <td>{{$student->user->birth_date}}</td>
                                     <td>{{$student->user->gender}}</td>
                                     <td>{{$student->user->phone_number}}</td>
                                     <td>{{$student->user->created_at}}</td>
-                                    <td>{{$student->admission_number}}</td>
+{{--                                    <td>{{$student->admission_number}}</td>--}}
                                     <td>{{$student->roll_number}}</td>
                                     <th>{{$student->class->name}}</th>
-                                   
+
                                     <td class="text-right">
                                      @permission('edit.teachers' || 'delete.teachers')
                                     <div class="dropdown">
@@ -73,7 +73,7 @@
                                         </div>
                                     </div>
                                     @endpermission
-                                </td>      
+                                </td>
                             </tr>
                               @endforeach
                             <!-- Repeat for other users -->

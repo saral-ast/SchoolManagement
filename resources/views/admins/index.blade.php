@@ -24,12 +24,12 @@
                             <tr>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th>Type</th>
-                                <th>Address</th>
+{{--                                <th>Type</th>--}}
+                                <th>Awddress</th>
                                 <th>Birth Date</th>
                                 <th>Gender</th>
                                 <th>Phone Number</th>
-                                <th>Creation Date</th>
+{{--                                <th>Creation Date</th>--}}
                                 <th></th>
                             </tr>
                         </thead>
@@ -37,16 +37,16 @@
                             <!-- Example user row -->
                               @foreach($admins as $admin)
                             <tr>
-                                    
+
                                     <td>{{ $admin->user->name }}</td>
                                     <td><a href="mailto:{{ $admin->user->email }}">{{ $admin->user->email }}</a></td>
-                                    <td>{{$admin->user->user_type()}}</td>
+{{--                                    <td>{{$admin->user->user_type()}}</td>--}}
                                     <td>{{$admin->user->address}}</td>
                                     <td>{{$admin->user->birth_date}}</td>
                                     <td>{{$admin->user->gender}}</td>
                                     <td>{{$admin->user->phone_number}}</td>
-                                    <td>{{$admin->user->created_at}}</td>
-                                   
+{{--                                    <td>{{$admin->user->created_at}}</td>--}}
+
                                     <td class="text-right">
                                         @if (!((Auth::user()->id === $admin->user->id) || ($admin->user->id === 1 )))
                                     <div class="dropdown">
@@ -54,7 +54,7 @@
                                             <i class="fas fa-ellipsis-v"></i>
                                         </a>
                                         {{-- @dd($user->admin->user_id) --}}
-                                        
+
                                         <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
                                             @permission('edit.admins')
                                             <a class="dropdown-item" href="{{ route('admin.edit', $admin->id) }}">Edit</a>
@@ -67,10 +67,10 @@
                                             </form>
                                             @endpermission
                                         </div>
-                                       
+
                                     </div>
                                      @endif
-                                </td>      
+                                </td>
                             </tr>
                               @endforeach
                             <!-- Repeat for other users -->

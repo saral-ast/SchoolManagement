@@ -39,12 +39,12 @@ class ScheduleController extends Controller
             (object)['id' => 5, 'name' => 'Friday'],
         ];
         $this->totalCount = count($this->totalSlot);
-    }   
-    
+    }
+
     public function index(Request $request)
     {
         $user = Auth::user();
-        
+
         $weekParam = $request->get('week');
 
         // Parse ISO week-year safely and fall back to current ISO week if invalid/missing
@@ -59,16 +59,16 @@ class ScheduleController extends Controller
             $selectedWeek = sprintf('%04d-W%02d', $isoYear, $isoWeek);
         }
 
-      
-        $weekStart = Carbon::now()->setISODate($isoYear, $isoWeek, 1); 
-        $weekEnd = $weekStart->copy()->addDays(4); 
- 
+
+        $weekStart = Carbon::now()->setISODate($isoYear, $isoWeek, 1);
+        $weekEnd = $weekStart->copy()->addDays(4);
+
         $classes = $this->scheduleService->getClasses($user);
-        
-        $weekDays = $this->weekDays; 
+
+        $weekDays = $this->weekDays;
         $timeSlots = $this->totalSlot;
         $scheduleData = [];
-        
+
         if ($classes->count() > 0) {
             // Use service method to get schedules
             $scheduleData = $this->scheduleService->getSchedulesForWeek($classes, $weekStart, $weekEnd);
@@ -76,10 +76,10 @@ class ScheduleController extends Controller
         $weekDaysWithDates = $this->scheduleService->generateWeekDaysWithDates($weekStart);
 
         return view('time_table.index', compact(
-            'classes', 
+            'classes',
             'weekDaysWithDates',
-            'timeSlots', 
-            'scheduleData', 
+            'timeSlots',
+            'scheduleData',
             'selectedWeek',
             'weekStart',
             'weekEnd'
@@ -208,15 +208,15 @@ class ScheduleController extends Controller
             $teachers = $subject->teachers;
             // dd(request()->day);
             $available_teachers  = $this->scheduleService->availableTeachers($teachers,request()->start_date,request()->end_date,$start_time,$end_time,request()->day);
-            
+
             return response()->json([
                 'teachers' => $available_teachers->values(),
-                
+
             ]);
            } catch (Exception $e) {
             //throw $th;
                 return response()->json(['error' => $e->getMessage()], 500);
-        }     
+        }
     }
 
     public function teacherSchedule(Request $request)
@@ -237,7 +237,7 @@ class ScheduleController extends Controller
         }
         $weekEnd = $weekStart->copy()->endOfWeek();
 
-       
+
         $scheduleData = $this->scheduleService->getTeacherSchedulesForWeek($teacher, $weekStart, $weekEnd);
 
         $weekDaysWithDates = $this->scheduleService->generateWeekDaysWithDates($weekStart);
@@ -255,8 +255,4 @@ class ScheduleController extends Controller
         ));
     }
 
-    
-
-
-   
 }
