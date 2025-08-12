@@ -16,7 +16,6 @@
                        onchange="this.form.submit()">
             </form>
             
-            <!-- Week Navigation -->
             <div class="btn-group" role="group">
                 <a href="{{ route('schedule.index', ['week' => $weekStart->copy()->subWeek()->format('o-\WW')]) }}" 
                    class="btn btn-outline-secondary btn-sm" title="Previous Week">← Prev</a>
@@ -34,22 +33,28 @@
         <!-- Week Information Banner -->
         <div class="d-flex justify-content-between align-items-center mb-4 p-3 border rounded">
             <div>
-                <strong>Week {{ $weekStart->format('W, o') }}:</strong> 
-                {{ $weekStart->format('l, M j') }} - {{ $weekEnd->format('l, M j, Y') }}
+                <strong class="text-primary">Week {{ $weekStart->format('W, o') }}:</strong> 
+                <span class="text-light"">{{ $weekStart->format('l, M j') }} - {{ $weekEnd->format('l, M j, Y') }}</span>
             </div>
         </div>
 
         @forelse($classes as $class)
+            <div class="mb-5">
+                @if(count($classes) > 1)
+                    <h5 class="mb-3 text-primary border-bottom pb-2">
+                        <i class="fas fa-graduation-cap"></i> {{ $class->name }}
+                    </h5>
+                @endif
                 
                 <div class="table-responsive">
                     <table class="table table-bordered">
-                        <thead class="">
+                        <thead>
                             <tr>
-                                <th style="width: 150px;">Time Slot</th>
+                                <th style="width: 150px;" class="text-center">Time Slot</th>
                                 @foreach($weekDaysWithDates as $day)
                                     <th class="text-center">
-                                        <div>{{ ucfirst($day->name) }}</div>
-                                        <small class="">{{ $day->formatted_date }}</small>
+                                        <div class="fw-bold">{{ ucfirst($day->name) }}</div>
+                                        <small class="text-light opacity-75">{{ $day->formatted_date }}</small>
                                     </th>
                                 @endforeach
                             </tr>
@@ -57,7 +62,9 @@
                         <tbody>
                             @foreach($timeSlots as $slot)
                                 <tr>
-                                    <td class="">{{ $slot->period }}</td>
+                                    <td class="fw-bold text-center align-middle">
+                                        {{ $slot->period }}
+                                    </td>
 
                                     @foreach($weekDaysWithDates as $day)
                                         @php
@@ -88,34 +95,38 @@
                                            }
                                         @endphp
 
-                                        <td class="schedule-cell" style="min-height: 80px;">
+                                        <td class="position-relative p-2" style="min-height: 80px; vertical-align: top;">
                                             @if($record)
-                                                <div class="schedule-info p-2 rounded d-flex justify-content-between align-items-start">
-                                                    <div>
-                                                        <div class="mb-1">{{ $record['subject'] }}</div>
+                                                <div class="p-2 rounded h-100 d-flex justify-content-between align-items-start">
+                                                    <div class="flex-grow-1">
+                                                        <div class="fw-semibold mb-1 text-white">{{ $record['subject'] }}</div>
                                                         <div class="text-muted small mb-1">
-                                                            <i class="fas fa-user"></i> {{ $record['teacher'] }}
+                                                            <i class="fas fa-user me-1"></i>{{ $record['teacher'] }}
                                                             @if(isset($record['proxy']) && $record['proxy'])
-                                                                <span class="badge badge-warning" style="font-size: 0.7em;">Proxy</span>
+                                                                <span class="badge bg-warning text-dark ms-1">
+                                                                    Proxy
+                                                                </span>
                                                             @endif
                                                         </div>
                                                         <div class="small text-muted">
-                                                            <i class="fas fa-calendar"></i>
+                                                            <i class="fas fa-calendar me-1"></i>
                                                             {{ \Carbon\Carbon::parse($record['start_date'])->format('M j') }} - 
                                                             {{ \Carbon\Carbon::parse($record['end_date'])->format('M j') }}
                                                         </div>
                                                     </div>
                                                     @if(auth()->user() && auth()->user()->user_type() === 'admin')
-                                                        <a class="text-warning ms-2" title="Edit" href="{{ route('schedule.edit', [
-                                                            'schedule_id' => $record['schedule_id'],
-                                                            'date' => $day->date->format('Y-m-d')
-                                                        ]) }}">
+                                                        <a class="text-warning ms-2 flex-shrink-0" 
+                                                           title="Edit Schedule" 
+                                                           href="{{ route('schedule.edit', [
+                                                               'schedule_id' => $record['schedule_id'],
+                                                               'date' => $day->date->format('Y-m-d')
+                                                           ]) }}">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
                                                     @endif
                                                 </div>
                                             @else
-                                                <div class="text-center text-muted py-3">
+                                                <div class="text-center text-muted py-4 h-100 d-flex align-items-center justify-content-center">
                                                     <small>No class</small>
                                                 </div>
                                             @endif
@@ -132,9 +143,12 @@
                 <hr class="my-4">
             @endif
         @empty
-            <div class="alert alert-warning">
-                <i class="fas fa-exclamation-triangle"></i>
-                No classes found or no schedule data available for week {{ $weekStart->format('W, o') }}.
+            <div class="alert alert-warning d-flex align-items-center" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <div>
+                    <strong>No Data Available!</strong><br>
+                    No classes found or no schedule data available for week {{ $weekStart->format('W, o') }}.
+                </div>
             </div>
         @endforelse
     </div>

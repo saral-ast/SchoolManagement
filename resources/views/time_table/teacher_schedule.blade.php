@@ -5,8 +5,20 @@
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
             <h4 class="card-title">My Weekly Schedule</h4>
-            <div>
-                <span class="badge badge-info">{{ $teacher->user->name }}</span>
+            <div class="d-flex align-items-center gap-3">
+                <div class="btn-group" role="group">
+                    <a href="?week_start={{ $weekStart->copy()->subWeek()->format('Y-m-d') }}" 
+                       class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-chevron-left"></i> Previous Week
+                    </a>
+                    <span class="btn btn-sm btn-primary">
+                        Week {{ $weekStart->format('W, o') }}: {{ $weekStart->format('M j') }} - {{ $weekEnd->format('M j, Y') }}
+                    </span>
+                    <a href="?week_start={{ $weekStart->copy()->addWeek()->format('Y-m-d') }}" 
+                       class="btn btn-sm btn-outline-primary">
+                        Next Week <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -31,35 +43,67 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table table-bordered text-white">
-                <thead class="bg-primary">
+            <table class="table  text-white">
+                <thead class="">
                     <tr>
                         <th style="min-width: 120px;">Time Slot</th>
-                        @foreach($weekDays as $day)
-                            <th class="text-center">{{ $day->name }}</th>
+                        @foreach($weekDaysWithDates as $day)
+                            <th class="text-center">
+                                <div class="fw-bold">{{ ucfirst($day->name) }}</div>
+                                <small class="text-light opacity-75">{{ $day->formatted_date }}</small>
+                            </th>
                         @endforeach
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($timeSlots as $slot)
                     <tr>
-                        <td class="bg-primary">
+                        <td class="">
                             <strong>{{ $slot->period }}</strong>
                         </td>
-                        @foreach($weekDays as $day)
+                        @foreach($weekDaysWithDates as $day)
                             <td class="schedule-cell text-center" style="min-height: 80px; vertical-align: middle;">
                                 @php
                                     $slotName = $slot->name;
-                                    $dayName = $day->name;
+                                    $dayName = strtolower($day->name);
                                     $hasSchedule = isset($scheduleData[$slotName][$dayName]);
                                 @endphp
                                 
                                 @if($hasSchedule)
-                                    <div class="schedule-info p-2">
-                                        <div class="badge badge-success mb-1">{{ $scheduleData[$slotName][$dayName]['subject'] }}</div>
-                                        <br>
-                                        <small class="text-info">{{ $scheduleData[$slotName][$dayName]['class'] }}</small>
-                                    </div>
+                                    @php
+                                        $schedule = $scheduleData[$slotName][$dayName];
+                                        $isProxy = $schedule['proxy'] ?? false;
+                                        
+                                        // For proxy schedules, only show on the specific date
+                                        if ($isProxy) {
+                                            $proxyDate = $schedule['proxy_date'] ?? $schedule['start_date'];
+                                            $currentDate = $day->date->format('Y-m-d');
+                                            $shouldShowProxy = ($currentDate === $proxyDate);
+                                        } else {
+                                            $shouldShowProxy = true;
+                                        }
+                                    @endphp
+                                    
+                                    @if($shouldShowProxy)
+                                        <div class="schedule-info p-2">
+                                            <div class="badge mb-1">
+                                                {{ $schedule['subject'] }}
+                                                @if($isProxy)
+                                                    <span class="badge bg-danger ms-1">Proxy</span>
+                                                @endif
+                                            </div>
+                                            <br>
+                                            <small>{{ $schedule['class'] }}</small>
+
+                                        </div>
+                                    @else
+                                        {{-- Show "Free" when proxy schedule exists but shouldn't be displayed on this date --}}
+                                        <div class="text-muted">
+                                            <i class="tim-icons icon-time"></i>
+                                            <br>
+                                            <small>Free</small>
+                                        </div>
+                                    @endif
                                 @else
                                     <div class="text-muted">
                                         <i class="tim-icons icon-time"></i>
@@ -73,44 +117,10 @@
                     @endforeach
                 </tbody>
             </table>
-        </div>
-
-        @if(empty($scheduleData))
-            <div class="alert alert-info mt-4">
-                <div class="text-center">
-                    <i class="tim-icons icon-bell-55" style="font-size: 3rem;"></i>
-                    <h5 class="mt-3">No Schedule Found</h5>
-                    <p class="mb-0">You don't have any classes scheduled for this week.</p>
-                </div>
-            </div>
-        @endif
-      
+        </div>      
     </div>
 </div>
 
 @endsection
 
-<style>
-    .schedule-cell {
-        transition: all 0.3s ease;
-    }
-    
-    .schedule-cell:hover {
-        background-color: rgba(255, 255, 255, 0.1) !important;
-        transform: scale(1.02);
-    }
-    
-    .schedule-info {
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
-    
-    .schedule-info:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-    
-    .badge {
-        font-size: 0.8rem;
-    }
-</style>
+

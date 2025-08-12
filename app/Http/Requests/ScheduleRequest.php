@@ -23,7 +23,7 @@ class ScheduleRequest extends FormRequest
     {
         return [
             'class' => 'required|exists:classes,id',
-            'start_date' => 'required|date',
+            'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after_or_equal:start_date',
             'subject.*' => 'required|exists:subjects,id',
             'teacher.*' => 'required|exists:teachers,id',

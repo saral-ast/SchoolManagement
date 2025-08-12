@@ -74,6 +74,100 @@
 
 <script>
 $(document).ready(function(){
+    // Function to get the next occurrence of a specific weekday
+    function getNextWeekday(weekday) {
+        const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const targetDay = weekdays.indexOf(weekday);
+        const today = new Date();
+        const currentDay = today.getDay();
+        
+        let daysUntilTarget = targetDay - currentDay;
+        if (daysUntilTarget <= 0) {
+            daysUntilTarget += 7; // Move to next week
+        }
+        
+        const nextDate = new Date(today);
+        nextDate.setDate(today.getDate() + daysUntilTarget);
+        return nextDate;
+    }
+    
+    // Function to restrict date inputs based on selected day
+    function restrictDateInputs() {
+        const selectedDay = $('#schedule-day').val();
+        const startDateInput = $('input[name="start_date"]');
+        const endDateInput = $('input[name="end_date"]');
+        
+        if (selectedDay) {
+            // Get the next occurrence of the selected weekday
+            const nextWeekday = getNextWeekday(selectedDay);
+            
+            // Set minimum date for start_date (next occurrence of selected weekday)
+            const minStartDate = nextWeekday.toISOString().split('T')[0];
+            startDateInput.attr('min', minStartDate);
+            
+            // Clear existing values if they don't match the selected day
+            if (startDateInput.val()) {
+                const startDate = new Date(startDateInput.val());
+                const startDay = startDate.toLocaleDateString('en-US', { weekday: 'long' });
+                if (startDay !== selectedDay) {
+                    startDateInput.val('');
+                }
+            }
+            
+            if (endDateInput.val()) {
+                const endDate = new Date(endDateInput.val());
+                const endDay = endDate.toLocaleDateString('en-US', { weekday: 'long' });
+                if (endDay !== selectedDay) {
+                    endDateInput.val('');
+                }
+            }
+        }
+    }
+    
+    // Restrict dates when day selection changes
+    $('#schedule-day').on('change', function() {
+        restrictDateInputs();
+    });
+    
+    // Validate start_date selection
+    $('input[name="start_date"]').on('change', function() {
+        const selectedDay = $('#schedule-day').val();
+        const selectedDate = new Date(this.value);
+        const selectedDayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
+        
+        if (selectedDay && selectedDayName !== selectedDay) {
+            alert(`Please select a ${selectedDay} date.`);
+            this.value = '';
+            return;
+        }
+        
+        // Update end_date min attribute
+        $('input[name="end_date"]').attr('min', this.value);
+    });
+    
+    // Validate end_date selection
+    $('input[name="end_date"]').on('change', function() {
+        const selectedDay = $('#schedule-day').val();
+        const selectedDate = new Date(this.value);
+        const selectedDayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
+        
+        if (selectedDay && selectedDayName !== selectedDay) {
+            alert(`Please select a ${selectedDay} date.`);
+            this.value = '';
+            return;
+        }
+        
+        const startDate = $('input[name="start_date"]').val();
+        if (startDate && this.value < startDate) {
+            alert('End date must be after start date.');
+            this.value = '';
+            return;
+        }
+    });
+    
+    // Initial restriction
+    restrictDateInputs();
+    
     // Attach event to all .subject-select (each row's subject select, not just first)
     $(document).on('change', '.subject-select', function(){
         const subjectId = $(this).val();
@@ -101,8 +195,7 @@ $(document).ready(function(){
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(data){
-                    console.log('donr');
-                    // Populate $teacherSelect here based on response
+                   
                     $teacherSelect.empty();
                    $teacherSelect.append('<option value="">Select Teacher</option>');
 
