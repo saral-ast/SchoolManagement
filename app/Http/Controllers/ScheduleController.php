@@ -192,7 +192,7 @@ class ScheduleController extends Controller
         // dd($data);
         DB::beginTransaction();
         try {
-            $this->scheduleService->splitAppointmentForOneDay(
+            $this->scheduleService->updateSchedule(
                  $data['schedule_id'],
                  $data['date'],
                  $data['proxy_teacher_id'],

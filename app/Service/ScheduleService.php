@@ -117,7 +117,7 @@ class ScheduleService
     }
 
 
-   public function splitAppointmentForOneDay(
+   public function updateSchedule(
      $scheduleId,
      $dateYmd,
      $proxyTeacherId,
