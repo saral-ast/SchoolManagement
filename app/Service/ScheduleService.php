@@ -167,29 +167,22 @@ class ScheduleService
         
         
         if ($targetDate->eq($origStart)) {
-            // dd($targetDate);
             $originalSchedule->delete();
-        } elseif ($targetDate->eq($origEnd)) {
+        } elseif ($targetDate->eq($origEnd) || $targetDate->isAfter($origStart) && $targetDate->isBefore($origEnd)) {
          
-            $beforeEnd = $targetDate->subDay();
-            if ($beforeEnd->gte($origStart)) {
-                $originalSchedule->update(['end_date' => $beforeEnd->format('Y-m-d')]);
-            }
-        } elseif ($targetDate->isAfter($origStart) && $targetDate->isBefore($origEnd)) {
-            $beforeEnd = $targetDate->subDay();
+            $beforeEnd = $targetDate->subWeek();
             if ($beforeEnd->gte($origStart)) {
                 $originalSchedule->update(['end_date' => $beforeEnd->format('Y-m-d')]);
             }
         }
 
 
-        // Create proxy appointment with conditional end date
         $proxyAppointment = Zap::for($proxyTeacher)
             ->named("Proxy: Subject {$subjectId} to Class {$classId} - {$slotName}")
             ->appointment()
             ->from($targetDate->format('Y-m-d'));
         
-        $proxyEndDate = $targetDate->addWeek();
+        $proxyEndDate = $targetDate->addDay();
         $proxyAppointment->to($proxyEndDate->format('Y-m-d'));
         
         $proxyAppointment
