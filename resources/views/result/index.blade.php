@@ -31,17 +31,17 @@
                                 <th>Grade</th>
                                 <th>Result Status</th>
                                 <th></th>
-                                @permission('edit.results')
-                                   <th></th>  
-                                @endpermission
-                               
+{{--                                @permission('edit.results')--}}
+{{--                                   <th></th>--}}
+{{--                                @endpermission--}}
+
                             </tr>
                         </thead>
                         <tbody>
                             <!-- Example user row -->
                               @foreach($results as $result)
                             <tr>
-                                    
+
                                     <td>{{ $result->id }}</td>
                                     <td>{{$result->class->name}}</td>
                                     <td><a href="{{ route('result.show',$result->id) }}">{{ $result->student->user->name }}</a></td>
@@ -51,9 +51,8 @@
                                     <td>{{$result->obtained_mark}}</td>
                                     <td>{{$result->grade}}</td>
                                     <td>{{$result->result_status}}</td>
-                                    <td><a href="{{ route('result.show',$result->id) }}">View Details</a> | <a href="{{ route('result.download',$result->id) }}">Download</a></td>
 
-                                     @permission('edit.results')
+{{--                                     @permission('edit.results')--}}
                                     <td class="text-right">
                                         {{-- @if (!((Auth::user()->id === $admin->user->id) || ($admin->user->id === 1 ))) --}}
                                     <div class="dropdown">
@@ -61,11 +60,15 @@
                                             <i class="fas fa-ellipsis-v"></i>
                                         </a>
                                         {{-- @dd($user->admin->user_id) --}}
-                                        
+
                                         <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                          
-                                            <a class="dropdown-item" href="{{ route('result.edit', $result->id) }}">Edit</a>
-                                      
+                                            @permission('edit.results')
+                                            <a class="dropdown-item" href="{{ route('result.edit', $result->id) }}"><i class="tim-icons icon-simple-remove"></i>Edit</a>
+                                            @endpermission
+
+                                            <a class="dropdown-item" href="{{ route('result.show',$result->id) }}"><i class="tim-icons icon-bullet-list-67"></i>View Details</a>
+                                            <a class="dropdown-item" href="{{ route('result.download',$result->id) }}"><i class="tim-icons icon-cloud-download-93"></i>
+                                                Download</a>
                                             {{-- @permission('delete.admins')
                                             <form action="{{ route('admin.destroy', $admin->id) }}" method="POST">
                                                 @csrf
@@ -75,11 +78,11 @@
                                             @endpermission --}}
                                         </div>
 
-                                       
+
                                     </div>
                                      {{-- @endif --}}
-                                </td>    
-                                      @endpermission  
+                                </td>
+{{--                                      @endpermission--}}
                             </tr>
                               @endforeach
                             <!-- Repeat for other users -->

@@ -44,6 +44,8 @@ Route::middleware('auth')->group(function(){
     Route::get('/teachers',[TeacherController::class,'index'])->name('teacher.index')->middleware('permission:view.teachers');
     Route::get('/teachers/create',[TeacherController::class,'create'])->name('teacher.create')->middleware('permission:create.teachers');
     Route::post('/teachers/create',[TeacherController::class,'store'])->name('teacher.store')->middleware('permission:create.teachers');
+    // Place static route before dynamic '/teacher/{teacher}' to avoid collision with 'schedule'
+    Route::get('/teacher/schedule',[ScheduleController::class,'teacherSchedule'])->name('teacher.schedule');
     Route::get('/teacher/{teacher}',[TeacherController::class,'show'])->name('teacher.show')->middleware('permission:view.teachers');
     Route::get('/teachers/{teacher}/edit',[TeacherController::class,'edit'])->name('teacher.edit')->middleware('permission:edit.teachers');
     Route::put('/teachers/{teacher}/edit',[TeacherController::class,'update'])->name('teacher.update')->middleware('permission:edit.teachers');
@@ -55,7 +57,7 @@ Route::middleware('auth')->group(function(){
     Route::get('/parents/create',[StudentParentController::class,'create'])->name('parent.create')->middleware('permission:create.parents');
     Route::post('/parents/create',[StudentParentController::class,'store'])->name('parent.store')->middleware('permission:create.parents');
     // Show must be unique from edit
-    Route::get('/parents/{parent}',[StudentParentController::class,'show'])->name('parent.show')->middleware('permission:view.parents');
+    Route::get('/parents/{parent}',[StudentParentController::class,'show'])->name('pa   rent.show')->middleware('permission:view.parents');
     Route::get('/parents/{parent}/edit',[StudentParentController::class,'edit'])->name('parent.edit')->middleware('permission:edit.parents');
     Route::put('/parents/{parent}',[StudentParentController::class,'update'])->name('parent.update')->middleware('permission:edit.parents');
     Route::delete('/parents/{parent}',[StudentParentController::class,'destroy'])->name('parent.destroy')->middleware('permission:delete.parents');
@@ -88,7 +90,6 @@ Route::middleware('auth')->group(function(){
     Route::get('/time-table/edit',[ScheduleController::class,'edit'])->name('schedule.edit');
     Route::post('/time-table/update',[ScheduleController::class,'update'])->name('schedule.update');
     Route::post('/time-table',[ScheduleController::class,'show'])->name('schedule.index');
-    Route::get('/teacher/schedule',[ScheduleController::class,'teacherSchedule'])->name('teacher.schedule');
 
 
     Route::get('/subject/{id}/teahcers',[ScheduleController::class,'getTeachers'])->name('suject.teachers');

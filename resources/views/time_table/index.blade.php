@@ -30,11 +30,17 @@
     </div>
 
     <div class="card-body">
+        <style>
+            /* Scoped to timetable only */
+            .schedule-table { border-collapse: collapse; border-color: rgba(255,255,255,0.45) !important; }
+            .schedule-table th, .schedule-table td { border: 1px solid rgba(255,255,255,0.45) !important; }
+            .schedule-table thead th { border-bottom: 1px solid rgba(255,255,255,0.45) !important; }
+        </style>
         <!-- Week Information Banner -->
         <div class="d-flex justify-content-between align-items-center mb-4 p-3 border rounded">
             <div>
                 <strong class="text-primary">Week {{ $weekStart->format('W, o') }}:</strong> 
-                <span class="text-light"">{{ $weekStart->format('l, M j') }} - {{ $weekEnd->format('l, M j, Y') }}</span>
+                <span class="text-white-50">{{ $weekStart->format('l, M j') }} - {{ $weekEnd->format('l, M j, Y') }}</span>
             </div>
         </div>
 
@@ -47,14 +53,14 @@
                 @endif
                 
                 <div class="table-responsive">
-                    <table class="table table-bordered">
+                    <table class="table table-bordered schedule-table">
                         <thead>
                             <tr>
-                                <th style="width: 150px;" class="text-center">Time Slot</th>
+                                <th style="width: 150px;" class="text-center text-white">Time Slot</th>
                                 @foreach($weekDaysWithDates as $day)
-                                    <th class="text-center">
-                                        <div class="fw-bold">{{ ucfirst($day->name) }}</div>
-                                        <small class="text-light opacity-75">{{ $day->formatted_date }}</small>
+                                    <th class="text-center text-white">
+                                        <div class="fw-bold text-white">{{ ucfirst($day->name) }}</div>
+                                        <small class="text-white-50">{{ $day->formatted_date }}</small>
                                     </th>
                                 @endforeach
                             </tr>
@@ -62,9 +68,7 @@
                         <tbody>
                             @foreach($timeSlots as $slot)
                                 <tr>
-                                    <td class="fw-bold text-center align-middle">
-                                        {{ $slot->period }}
-                                    </td>
+                                    <td class="fw-bold text-center align-middle text-white">{{ $slot->period }}</td>
 
                                     @foreach($weekDaysWithDates as $day)
                                         @php
@@ -96,17 +100,17 @@
                                         <td class="position-relative p-2" style="min-height: 80px; vertical-align: top;">
                                             @if($record)
                                                 <div class="p-2 rounded h-100 d-flex justify-content-between align-items-start">
-                                                    <div class="flex-grow-1">
+                                    <div class="flex-grow-1">
                                                         <div class="fw-semibold mb-1 text-white">{{ $record['subject'] }}</div>
-                                                        <div class="text-muted small mb-1">
+                                                        <div class="small mb-1 text-white-50">
                                                             <i class="fas fa-user me-1"></i>{{ $record['teacher'] }}
                                                             @if(isset($record['proxy']) && $record['proxy'])
-                                                                <span class="badge bg-warning text-dark ms-1">
+                                                <span class="badge border border-warning text-warning ms-1">
                                                                     Proxy
                                                                 </span>
                                                             @endif
                                                         </div>
-                                                        <div class="small text-muted">
+                                                        <div class="small text-white-50">
                                                             <i class="fas fa-calendar me-1"></i>
                                                             {{ \Carbon\Carbon::parse($record['start_date'])->format('M j') }} - 
                                                             {{ \Carbon\Carbon::parse($record['end_date'])->format('M j') }}
@@ -124,7 +128,7 @@
                                                     @endif
                                                 </div>
                                             @else
-                                                <div class="text-center text-muted py-4 h-100 d-flex align-items-center justify-content-center">
+                                                <div class="text-center text-white-50 py-4 h-100 d-flex align-items-center justify-content-center">
                                                     <small>No class</small>
                                                 </div>
                                             @endif

@@ -221,6 +221,7 @@ class ScheduleController extends Controller
 
     public function teacherSchedule(Request $request)
     {
+
         $user = Auth::user();
         if ($user->user_type() !== 'teacher') {
             return redirect()->route('dashboard')->with('error', 'Unauthorized access.');

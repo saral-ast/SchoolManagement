@@ -23,6 +23,12 @@
         </div>
     </div>
     <div class="card-body">
+        <style>
+            /* Scoped to teacher schedule table only */
+            .teacher-schedule-table { border-collapse: collapse; border-color: rgba(255,255,255,0.45) !important; }
+            .teacher-schedule-table th, .teacher-schedule-table td { border: 1px solid rgba(255,255,255,0.45) !important; }
+            .teacher-schedule-table thead th { border-bottom: 1px solid rgba(255,255,255,0.45) !important; }
+        </style>
         <div class="row mb-4">
             <div class="col-md-6">
                 <h6 class="text-info">Teacher Information</h6>
@@ -43,14 +49,14 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table  text-white">
+            <table class="table table-bordered teacher-schedule-table">
                 <thead class="">
                     <tr>
-                        <th style="min-width: 120px;">Time Slot</th>
+                        <th style="min-width: 120px;" class="text-white">Time Slot</th>
                         @foreach($weekDaysWithDates as $day)
-                            <th class="text-center">
-                                <div class="fw-bold">{{ ucfirst($day->name) }}</div>
-                                <small class="text-light opacity-75">{{ $day->formatted_date }}</small>
+                            <th class="text-center text-white">
+                                <div class="fw-bold text-white">{{ ucfirst($day->name) }}</div>
+                                <small class="text-white-50">{{ $day->formatted_date }}</small>
                             </th>
                         @endforeach
                     </tr>
@@ -58,9 +64,7 @@
                 <tbody>
                     @foreach($timeSlots as $slot)
                     <tr>
-                        <td class="">
-                            <strong>{{ $slot->period }}</strong>
-                        </td>
+                        <td class="text-white fw-bold">{{ $slot->period }}</td>
                         @foreach($weekDaysWithDates as $day)
                             <td class="schedule-cell text-center" style="min-height: 80px; vertical-align: middle;">
                                 @php
@@ -86,26 +90,26 @@
                                     
                                     @if($shouldShowProxy)
                                         <div class="schedule-info p-2">
-                                            <div class="badge mb-1">
+                                            <div class="badge mb-1 text-white">
                                                 {{ $schedule['subject'] }}
                                                 @if($isProxy)
-                                                    <span class="badge bg-danger ms-1">Proxy</span>
+                                                    <span class="badge border border-danger text-danger ms-1">Proxy</span>
                                                 @endif
                                             </div>
                                             <br>
-                                            <small>{{ $schedule['class'] }}</small>
+                                            <small class="text-white-50">{{ $schedule['class'] }}</small>
 
                                         </div>
                                     @else
                                         {{-- Show "Free" when proxy schedule exists but shouldn't be displayed on this date --}}
-                                        <div class="text-muted">
+                                        <div class="text-white-50">
                                             <i class="tim-icons icon-time"></i>
                                             <br>
                                             <small>Free</small>
                                         </div>
                                     @endif
                                 @else
-                                    <div class="text-muted">
+                                    <div class="text-white-50">
                                         <i class="tim-icons icon-time"></i>
                                         <br>
                                         <small>Free</small>
