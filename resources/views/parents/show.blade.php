@@ -9,19 +9,6 @@
                     <div class="card shadow">
                         <div class="card-header border-0 d-flex justify-content-between align-items-center text-white">
                             <h3 class="mb-0">Parent Details</h3>
-                            <div class="d-flex gap-2">
-                                <a href="{{ route('parent.index') }}" class="btn btn-sm btn-secondary">Back</a>
-                                @permission('edit.parents')
-                                <a href="{{ route('parent.edit', $parent->id) }}" class="btn btn-sm btn-primary">Edit</a>
-                                @endpermission
-                                @permission('delete.parents')
-                                <form action="{{ route('parent.destroy', $parent->id) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('delete')
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this parent?')">Delete</button>
-                                </form>
-                                @endpermission
-                            </div>
                         </div>
                         <div class="card-body">
                             @include('alerts.success')
@@ -98,8 +85,10 @@
                                         @endforelse
                                     </tbody>
                                 </table>
+                                <div class="d-flex gap-2">
+                                    <a href="{{ route('parent.index') }}" class="btn btn-sm btn-secondary">Back</a>
+                                </div>
                             </div>
-
                         </div>
                     </div>
                 </div>

@@ -30,6 +30,10 @@ class StudentController extends Controller
         return view('students.index',compact('students'));
     }
 
+    public  function show(Student $student){
+        return view('students.show',compact('student'));
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -53,8 +57,8 @@ class StudentController extends Controller
 
             DB::commit();
             return redirect()->route('student.index')->with('status','Student Created SuccessFully');
-                
-            
+
+
         }   catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
@@ -66,14 +70,14 @@ class StudentController extends Controller
     /**
      * Display the specified resource.
      */
-    
+
 
     /**
      * Show the form for editing the specified resource.
      */
     public function edit(Student $student)
     {
-        $allClass = Classes::all();   
+        $allClass = Classes::all();
         return view('students.edit',compact('student','allClass'));
     }
 
@@ -85,9 +89,9 @@ class StudentController extends Controller
         // dd($request->all());
          DB::beginTransaction();
         try {
-            
+
             $validated = $request->validated();
-            
+
 
             $user = $student->user;
             $this->userService->update($validated,$user);
@@ -99,8 +103,8 @@ class StudentController extends Controller
 
             DB::commit();
             return redirect()->route('student.index')->with('status','Student Updated SuccessFully');
-                
-            
+
+
         }   catch (Exception $e) {
             DB::rollBack();
             return redirect()->back()
@@ -121,7 +125,7 @@ class StudentController extends Controller
             $this->userService->destroy($user);
             DB::commit();
             return redirect()->route('student.index')->with('status', 'Student deleted successfully');
- 
+
         } catch (Exception $e) {
              DB::rollBack();
             return redirect()->back()
@@ -138,7 +142,7 @@ class StudentController extends Controller
         ]);
        } catch (Exception $e) {
            return response()->json([
-              'error' =>'Unable to fetch students' 
+              'error' =>'Unable to fetch students'
            ],500);
        }
     }
@@ -146,12 +150,12 @@ class StudentController extends Controller
     public function getStudentsByMultipleClasses(Request $request)
     {
         $classIds = $request->input('class_ids', []);
-        
+
         $students = Student::whereIn('class_id', $classIds)
             ->with(['user', 'class'])
             ->orderBy('class_id')
             ->get();
-        
+
         return response()->json([
             'students' => $students
         ]);

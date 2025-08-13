@@ -44,9 +44,10 @@ Route::middleware('auth')->group(function(){
     Route::get('/teachers',[TeacherController::class,'index'])->name('teacher.index')->middleware('permission:view.teachers');
     Route::get('/teachers/create',[TeacherController::class,'create'])->name('teacher.create')->middleware('permission:create.teachers');
     Route::post('/teachers/create',[TeacherController::class,'store'])->name('teacher.store')->middleware('permission:create.teachers');
-    Route::get('/teachers/{teacher}',[TeacherController::class,'edit'])->name('teacher.edit')->middleware('permission:edit.teachers');
-    Route::put('/teachers/{teacher}',[TeacherController::class,'update'])->name('teacher.update')->middleware('permission:edit.teachers');
-    Route::delete('/teachers/{teacher}',[TeacherController::class,'destroy'])->name('teacher.destroy')->middleware('permission:delete.teachers');
+    Route::get('/teacher/{teacher}',[TeacherController::class,'show'])->name('teacher.show')->middleware('permission:view.teachers');
+    Route::get('/teachers/{teacher}/edit',[TeacherController::class,'edit'])->name('teacher.edit')->middleware('permission:edit.teachers');
+    Route::put('/teachers/{teacher}/edit',[TeacherController::class,'update'])->name('teacher.update')->middleware('permission:edit.teachers');
+    Route::delete('/teachers/{teacher}/delete',[TeacherController::class,'destroy'])->name('teacher.destroy')->middleware('permission:delete.teachers');
 
 
     Route::get('/parents',[StudentParentController::class,'index'])->name('parent.index')->middleware('permission:view.parents');
@@ -62,9 +63,10 @@ Route::middleware('auth')->group(function(){
     Route::get('/students',[StudentController::class,'index'])->name('student.index')->middleware('permission:view.students');
     Route::get('/students/create',[StudentController::class,'create'])->name('student.create')->middleware('permission:create.students');
     Route::post('/students/create',[StudentController::class,'store'])->name('student.store')->middleware('permission:create.students');
-    Route::get('/students/{student}',[StudentController::class,'edit'])->name('student.edit')->middleware('permission:edit.students');
-    Route::put('/students/{student}',[StudentController::class,'update'])->name('student.update')->middleware('permission:edit.students');
-    Route::delete('/students/{student}',[StudentController::class,'destroy'])->name('student.destroy')->middleware('permission:delete.students');
+    Route::get('/students/{student}',[StudentController::class,'show'])->name('student.show')->middleware('permission:view.students');
+    Route::get('/students/{student}/edit',[StudentController::class,'edit'])->name('student.edit')->middleware('permission:edit.students');
+    Route::put('/students/{student}/edit',[StudentController::class,'update'])->name('student.update')->middleware('permission:edit.students');
+    Route::delete('/students/{student}/delete',[StudentController::class,'destroy'])->name('student.destroy')->middleware('permission:delete.students');
 
     Route::get('/classes/{id}/students',[StudentController::class,'getStudents'])->name('classes.students');
     Route::post('/classes/students/multiple', [StudentController::class, 'getStudentsByMultipleClasses'])

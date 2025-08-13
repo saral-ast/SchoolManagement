@@ -63,15 +63,15 @@
                                             <i class="fas fa-ellipsis-v"></i>
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
-                                            <a class="dropdown-item" href=""><i class="tim-icons icon-bullet-list-67"></i>View Details</a>
+                                            <a class="dropdown-item" href="{{route('teacher.show',$teacher->id)}}"><i class="tim-icons icon-bullet-list-67"></i>View Details</a>
                                             @permission('edit.teachers')
-                                            <a class="dropdown-item" href="{{ route('teacher.edit', $teacher->id) }}">Edit</a>
+                                            <a class="dropdown-item" href="{{ route('teacher.edit', $teacher->id) }}"> <i class="tim-icons icon-pencil"></i>Edit</a>
                                             @endpermission
                                             @permission('delete.teachers')
                                             <form action="{{ route('teacher.destroy', $teacher->id) }}" method="POST">
                                                 @csrf
                                                 @method('delete')
-                                                <button class="dropdown-item">delete</button>
+                                                <button class="dropdown-item"><i class="tim-icons icon-simple-remove"></i>delete</button>
                                             </form>
                                             @endpermission
                                         </div>

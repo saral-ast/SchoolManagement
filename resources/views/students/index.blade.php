@@ -31,7 +31,7 @@
                                 <th>Phone Number</th>
 {{--                                <th>Creation Date</th>--}}
                                 <th>Admission Number</th>
-                                <th>Roll Number</th>
+{{--                                <th>Roll Number</th>--}}
 {{--                                <th>Class</th>--}}
                                 <th></th>
                             </tr>
@@ -50,29 +50,32 @@
                                     <td>{{$student->user->phone_number}}</td>
                                     <td>{{$student->user->created_at}}</td>
 {{--                                    <td>{{$student->admission_number}}</td>--}}
-                                    <td>{{$student->roll_number}}</td>
+{{--                                    <td>{{$student->roll_number}}</td>--}}
                                     <th>{{$student->class->name}}</th>
 
                                     <td class="text-right">
-                                     @permission('edit.teachers' || 'delete.teachers')
+{{--                                     @permission('edit.teachers' || 'delete.teachers')--}}
                                     <div class="dropdown">
                                         <a class="btn btn-sm btn-icon-only text-light" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             <i class="fas fa-ellipsis-v"></i>
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-right dropdown-menu-arrow">
+                                            @permission('view.students')
+                                            <a class="dropdown-item" href="{{route('student.show',$student->id)}}"><i class="tim-icons icon-bullet-list-67"></i> View Details</a>
+                                            @endpermission
                                             @permission('edit.students')
-                                            <a class="dropdown-item" href="{{ route('student.edit', $student->id) }}">Edit</a>
+                                            <a class="dropdown-item" href="{{ route('student.edit', $student->id) }}"><i class="tim-icons icon-pencil"></i>Edit</a>
                                             @endpermission
                                             @permission('delete.students')
                                             <form action="{{ route('student.destroy', $student->id) }}" method="POST">
                                                 @csrf
                                                 @method('delete')
-                                                <button class="dropdown-item">delete</button>
+                                                <button class="dropdown-item"><i class="tim-icons icon-simple-remove"></i>Delete</button>
                                             </form>
                                             @endpermission
                                         </div>
                                     </div>
-                                    @endpermission
+{{--                                    @endpermission--}}
                                 </td>
                             </tr>
                               @endforeach
