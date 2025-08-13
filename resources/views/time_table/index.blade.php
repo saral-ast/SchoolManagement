@@ -12,7 +12,7 @@
         <div class="px-3 pt-2 pb-0">
             <div class="d-flex justify-content-between align-items-center flex-wrap">
                 <!-- Left: Week Filter (Black Dashboard: use form-inline, mr-2 spacing) -->
-                <form method="GET" class="form-inline mb-0 d-flex align-items-center">
+                <form method="GET" class="form-inline mb-0 d-flex al    ign-items-center">
                     <label for="week" class="mr-2 mb-0 text-white-50">Select Week:</label>
                     <div class="form-group mb-0">
                         <input type="week"
