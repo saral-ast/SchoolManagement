@@ -55,19 +55,19 @@ class User extends Authenticatable
     }
 
     public function admin(){
-        return $this->hasMany(Admin::class);
+        return $this->hasOne(Admin::class);
     }
-    
-      public function teacher(){
+
+    public function teacher(){
         return $this->hasMany(Teacher::class);
     }
-    
+
     public function student_parent(){
-        return $this->hasMany(StudentParent::class);
+        return $this->hasOne(StudentParent::class);
     }
 
       public function student(){
-        return $this->hasMany(Student::class);
+        return $this->hasOne(Student::class);
     }
 
     public function user_type()
@@ -88,7 +88,7 @@ class User extends Authenticatable
         if ($this->student()->exists()) {
             return 'student';
         }
-    
+
     return null; // or 'unknown'
 }
 

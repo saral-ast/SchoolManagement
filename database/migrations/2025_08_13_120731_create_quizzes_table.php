@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('total_questions')->default('10');
             $table->string('total_marks')->default('100');
             $table->enum('type',['random','mixed'])->default('mixed');
+            $table->boolean('negative_marking_enabled')->default(false);
+            $table->float('negative_marking_percent')->default('0');
             $table->timestamps();
         });
     }

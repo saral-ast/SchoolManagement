@@ -14,7 +14,7 @@ class Student extends Model
     public function class(){
         return $this->belongsTo(Classes::class);
     }
-    
+
     public function parents(){
         return $this->belongsToMany(StudentParent::class, 'student_parent_pivots', 'student_id', 'parent_id');
     }
@@ -22,5 +22,9 @@ class Student extends Model
     public function results(){
         return $this->hasMany(Result::class);
     }
-    
+
+    public function attempts(){
+        return $this->hasMany(QuizAttempt::class, 'student_id');
+    }
+
 }
