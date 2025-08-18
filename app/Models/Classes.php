@@ -11,4 +11,8 @@ class Classes extends Model
     public function students(){
         return $this->hasMany(Student::class);
     }
+    public function quizzes()
+    {
+        return $this->hasMany(Quiz::class);
+    }
 }

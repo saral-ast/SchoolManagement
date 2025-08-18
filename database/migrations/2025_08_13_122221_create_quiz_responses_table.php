@@ -22,7 +22,7 @@ return new class extends Migration
             $table->json('selected_options'); // { "selected_options" : [] }
             $table->boolean('is_correct')->default(false);
             $table->string('marks_awarded')->default('0');
-            $table->string('time_taken')->default('0'); // Time taken to answer the question in seconds
+            $table->string('time_taken')->default('0'); // Time taken to answer the questions in seconds
             $table->timestamps();
         });
     }

@@ -9,6 +9,7 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentParentController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\QuestionController;
 use App\Models\Admin;
 use App\Models\Student;
 use App\Models\User;
@@ -94,6 +95,10 @@ Route::middleware('auth')->group(function(){
 
     Route::get('/subject/{id}/teahcers',[ScheduleController::class,'getTeachers'])->name('suject.teachers');
 
+
+
+    Route::get('/question/create',[QuestionController::class,'create'])->name('question.create');
+    Route::post('/question/create',[QuestionController::class,'store'])->name('question.store');
 });
 
 Route::get('/register',function(){
