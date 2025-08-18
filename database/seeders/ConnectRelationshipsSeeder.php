@@ -26,7 +26,7 @@ class ConnectRelationshipsSeeder extends Seeder
 
         // Permission mapping by role
         $rolePermissions = [
-            'Teacher' => [    
+            'Teacher' => [
                 'view.students',
                 'create.students',
                 'edit.students',
@@ -35,15 +35,21 @@ class ConnectRelationshipsSeeder extends Seeder
                 'edit.results',
                 'view.parents',
                 'view.schedules',
+                'create.quizzes',
+                'edit.quizzes',
+                'view.quizzes',
             ],
             'Parent' => [
                 'view.students',
                 'view.results',
                 'view.schedules',
+                'view.quizzes',
             ],
             'Student' => [
                 'view.results',
                 'view.schedules',
+                'view.quizzes',
+                'attempt.quizzes',
             ],
         ];
 

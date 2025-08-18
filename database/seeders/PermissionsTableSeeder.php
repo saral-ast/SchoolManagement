@@ -160,7 +160,7 @@ class PermissionsTableSeeder extends Seeder
                 'description' => 'Can create results',
                 'model'       => 'Result',
             ],
-            
+
             // Schedule
             [
                 'name'        => 'Can View Schedules',
@@ -179,6 +179,30 @@ class PermissionsTableSeeder extends Seeder
                 'slug'        => 'edit.results',
                 'description' => 'Can edit results',
                 'model'       => 'Result',
+            ],
+            [
+                'name'        => 'Can Create Quizzes',
+                'slug'        => 'create.quizzes',
+                'description' => 'Can create quizzes',
+                'model'       => 'Quiz',
+            ],
+            [
+                'name'        => 'Can View Quizzes',
+                'slug'        => 'view.quizzes',
+                'description' => 'Can view quizzes',
+                'model'       => 'Quiz',
+            ],
+            [
+                'name'        => 'Can Edit Quizzes',
+                'slug'        => 'edit.quizzes',
+                'description' => 'Can edit quizzes',
+                'model'       => 'Quiz',
+            ],
+            [
+                'name'        => 'Can Attempt Quizzes',
+                'slug'        => 'attempt.quizzes',
+                'description' => 'Can attempt quizzes',
+                'model'       => 'Quiz',
             ],
         ];
 
