@@ -19,10 +19,6 @@ class AuthController extends Controller
              if(!auth()->attempt($credentaial)){
                   throw new Exception('Invalid Credentials');
              }
-
-             $user = User::where('email', $credentaial['email'])->first();
-
-            auth()->login($user);
             $request->session()->regenerate();
 
             return redirect()->route('dashboard');
@@ -38,5 +34,5 @@ class AuthController extends Controller
         return redirect()->route('login');
     }
 
-    
+
 }

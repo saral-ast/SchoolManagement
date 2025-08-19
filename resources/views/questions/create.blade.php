@@ -77,8 +77,8 @@
                                 <label class="btn btn-outline-info {{ old('type','single') === 'single' ? 'active' : '' }}">
                                     <input type="radio" name="type" id="single" value="single" autocomplete="off" {{ old('type','single') === 'single' ? 'checked' : '' }}> Single Option
                                 </label>
-                                <label class="btn btn-outline-info ms-2 {{ old('type') === 'multi' ? 'active' : '' }}">
-                                    <input type="radio" name="type" id="multi" value="multi" autocomplete="off" {{ old('type') === 'multi' ? 'checked' : '' }}> Multiple Option
+                                <label class="btn btn-outline-info ms-2 {{ old('type') === 'multiple' ? 'active' : '' }}">
+                                    <input type="radio" name="type" id="multiple" value="multiple" autocomplete="off" {{ old('type') === 'multiple' ? 'checked' : '' }}> Multiple Option
                                 </label>
                             </div>
                         </div>

@@ -23,7 +23,7 @@ class QuestionRequest extends FormRequest
     {
         return [
             'question_text' => 'required|string|max:2000',
-            'type' => 'required|in:single,multi',
+            'type' => 'required|in:single,multiple',
             'subject_id' => 'required|exists:subjects,id',
             'class_id' => 'required|exists:classes,id',
             'mark' => 'required|numeric|min:1|max:100',
