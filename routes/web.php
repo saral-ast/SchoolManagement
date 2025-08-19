@@ -96,7 +96,7 @@ Route::middleware('auth')->group(function(){
     Route::get('/subject/{id}/teahcers',[ScheduleController::class,'getTeachers'])->name('suject.teachers');
 
 
-
+    Route::get('/questions',[QuestionController::class,'index'])->name('question.index');
     Route::get('/question/create',[QuestionController::class,'create'])->name('question.create');
     Route::post('/question/create',[QuestionController::class,'store'])->name('question.store');
 });

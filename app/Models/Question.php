@@ -31,4 +31,8 @@ class Question extends Model
     {
         return $this->hasMany(QuizResponse::class,    'question_id');
     }
+    public function class()
+    {
+        return $this->belongsTo(Classes::class, 'class_id');
+    }
 }

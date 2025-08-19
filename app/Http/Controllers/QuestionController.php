@@ -18,6 +18,24 @@ class QuestionController
         $this->questionService = $questionService;
     }
 
+    public function index(){
+        try {
+            $userType = auth()->user()->user_type();
+            if($userType === 'admin'){
+                $questions = Question::with('subject','class')->paginate(10);
+            } elseif ($userType === 'teacher') {
+                $teacher = Teacher::where('user_id', auth()->id())->first();
+                $subjects = $teacher->subjects->pluck('id')->toArray();
+                $questions = Question::whereIn('subject_id', $subjects)
+                    ->with('subject', 'class')
+                    ->paginate(10);
+            }
+            return view('questions.index', compact('questions'));
+        }catch (\Exception $exception){
+            return redirect()->back()->with('error', 'Failed to load questions: ' . $exception->getMessage());
+        }
+    }
+
     public function create()
     {
         $classes = Classes::all();
