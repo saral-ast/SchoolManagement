@@ -9,20 +9,20 @@
         border: 1px solid #344675;
     }
     .card .form-control::placeholder { color: #9A9A9A; }
-    .option-row, #options-list .list-group-item { 
-        background-color: #27293d; 
-        border: 1px solid #344675; 
+    .option-row, #options-list .list-group-item {
+        background-color: #27293d;
+        border: 1px solid #344675;
     }
-    .option-row .option-input { 
-        background-color: #27293d; 
-        color: #ffffff; 
-        border: 1px solid #344675; 
+    .option-row .option-input {
+        background-color: #27293d;
+        color: #ffffff;
+        border: 1px solid #344675;
     }
-    .correct-selector input[type="radio"], .correct-selector input[type="checkbox"] { 
-        position: static !important; 
-        margin: 0 !important; 
-        opacity: 1 !important; 
-        visibility: visible !important; 
+    .correct-selector input[type="radio"], .correct-selector input[type="checkbox"] {
+        position: static !important;
+        margin: 0 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
     }
     </style>
 
@@ -57,14 +57,28 @@
                             @include('alerts.feedback', ['field' => 'question_text'])
                         </div>
 
+                        <x-form-field label="mark" name="mark" type="number" value="{{ old('mark', 1) }}" min="1" step="0.01" required>
+                            <small class="form-text text-muted">Enter the mark for this question.</small>
+                        </x-form-field>
+
+                        <div class="form-group mt-3">
+                            <label>Difficulty Level</label>
+                            <select name="difficulty" class="form-control" required>
+                                <option value="">Select Difficulty</option>
+                                <option value="easy" {{ old('difficulty') == 'easy' ? 'selected' : '' }}>Easy</option>
+                                <option value="medium" {{ old('difficulty') == 'medium' ? 'selected' : '' }}>Medium</option>
+                                <option value="hard" {{ old('difficulty') == 'hard' ? 'selected' : '' }}>Hard</option>
+                            </select>
+                        </div>
+
                         <div class="form-group mt-3">
                             <label>Question Type</label>
                             <div class="btn-group btn-group-toggle d-flex" data-toggle="buttons" role="group" aria-label="Question type">
-                                <label class="btn btn-outline-info {{ old('settype','single') === 'single' ? 'active' : '' }}">
-                                    <input type="radio" name="settype" id="single" value="single" autocomplete="off" {{ old('settype','single') === 'single' ? 'checked' : '' }}> Single Option
+                                <label class="btn btn-outline-info {{ old('type','single') === 'single' ? 'active' : '' }}">
+                                    <input type="radio" name="type" id="single" value="single" autocomplete="off" {{ old('type','single') === 'single' ? 'checked' : '' }}> Single Option
                                 </label>
-                                <label class="btn btn-outline-info ms-2 {{ old('settype') === 'multi' ? 'active' : '' }}">
-                                    <input type="radio" name="settype" id="multi" value="multi" autocomplete="off" {{ old('settype') === 'multi' ? 'checked' : '' }}> Multiple Option
+                                <label class="btn btn-outline-info ms-2 {{ old('type') === 'multi' ? 'active' : '' }}">
+                                    <input type="radio" name="type" id="multi" value="multi" autocomplete="off" {{ old('type') === 'multi' ? 'checked' : '' }}> Multiple Option
                                 </label>
                             </div>
                         </div>
@@ -103,21 +117,22 @@
             const minOptions = 2;
 
             function refreshCorrectSelectors() {
-                const settype = $('input[name="settype"]:checked').val();
+                const type = $('input[name="type"]:checked').val();
                 $('.option-row').each(function(i, row) {
                     const $row = $(row);
                     const $selector = $row.find('.correct-selector');
                     const inputVal = $row.find('.option-input').val().trim();
                     $selector.empty();
                     if (inputVal !== '') {
-                        if (settype === 'single') {
-                            $selector.html(`<input type=\"radio\" name=\"correct_option[]\" value=\"${i}\">`);
+                        if (type === 'single') {
+                            $selector.html(`<input type="radio" name="correct_option[]" value="${inputVal}">`);
                         } else {
-                            $selector.html(`<input type=\"checkbox\" name=\"correct_option[]\" value=\"${i}\">`);
+                            $selector.html(`<input type="checkbox" name="correct_option[]" value="${inputVal}">`);
                         }
                     }
                 });
             }
+
 
             function updateRemoveButtons() {
                 const rowCount = $('.option-row').length;
@@ -161,7 +176,7 @@
 
             // Update selectors on option text/type change
             $(document).on('input', '.option-input', refreshCorrectSelectors);
-            $('input[name="settype"]').change(refreshCorrectSelectors);
+            $('input[name="type"]').change(refreshCorrectSelectors);
 
             // Initialize SortableJS for drag & drop
             Sortable.create(document.getElementById('options-list'), {

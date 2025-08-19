@@ -8,6 +8,15 @@ class Question extends Model
 {
     protected $guarded = [];
 
+
+    public function casts(): array
+    {
+        return [
+            'options' => 'array',
+            'mark' => 'integer',
+        ];
+    }
+
     public function subject()
     {
         return $this->belongsTo(Subject::class, 'subject_id');

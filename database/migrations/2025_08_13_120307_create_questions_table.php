@@ -17,8 +17,12 @@ return new class extends Migration
             $table->foreignIdFor(App\Models\Subject::class, 'subject_id')
                 ->constrained()
                 ->cascadeOnDelete();
+            $table->foreignIdFor(\App\Models\Classes::class, 'class_id')
+                ->constrained()
+                ->cascadeOnDelete();
             $table->json('options'); // { "options" : [] , "correct_option" : [] }
-            $table->enum('question_type', ['single_choice', 'multiple_choice']);
+            $table->enum('type', ['single', 'multiple']);
+            $table->enum('difficulty', ['easy', 'medium', 'hard']);
             $table->string('mark')->default('1');
             $table->timestamps();
         });

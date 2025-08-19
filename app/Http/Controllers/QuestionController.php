@@ -4,12 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\QuestionRequest;
 use App\Models\Classes;
+use App\Models\Question;
 use App\Models\Subject;
 use App\Models\Teacher;
+use App\Service\QuestionService;
 use Illuminate\Http\Request;
 
-class QuestionController extends Controller
+class QuestionController
 {
+    protected $questionService;
+    public function __construct(QuestionService $questionService)
+    {
+        $this->questionService = $questionService;
+    }
+
     public function create()
     {
         $classes = Classes::all();
@@ -25,8 +33,12 @@ class QuestionController extends Controller
 
     public function store(QuestionRequest $questionRequest)
     {
-        $validated = $questionRequest->validated();
-        dd($validated);
-//        $question = auth()->user()->questions()->create($validated);
+        try {
+            $validated = $questionRequest->validated();
+            $this->questionService->createQuestion($validated);
+            return redirect()->route('dashboard')->with('status', 'Question Created Successfully');
+        }catch (\Exception $exception){
+            return redirect()->back()->with('error', 'Failed to create question: ' . $exception->getMessage());
+        }
     }
 }
