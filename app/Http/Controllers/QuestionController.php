@@ -54,7 +54,7 @@ class QuestionController
         try {
             $validated = $questionRequest->validated();
             $this->questionService->createQuestion($validated);
-            return redirect()->route('dashboard')->with('status', 'Question Created Successfully');
+            return redirect()->route('question.index')->with('status', 'Question Created Successfully');
         }catch (\Exception $exception){
             return redirect()->back()->with('error', 'Failed to create question: ' . $exception->getMessage());
         }
@@ -72,7 +72,7 @@ class QuestionController
         try {
             $validated = $questionRequest->validated();
             $this->questionService->updateQuestion($validated, $question);
-            return redirect()->route('dashboard')->with('status', 'Question Updated Successfully');
+            return redirect()->route('question.index')->with('status', 'Question Updated Successfully');
         }catch (\Exception $exception){
             return redirect()->back()->with('error', 'Failed to update question: ' . $exception->getMessage());
         }
