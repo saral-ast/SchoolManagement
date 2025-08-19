@@ -59,4 +59,22 @@ class QuestionController
             return redirect()->back()->with('error', 'Failed to create question: ' . $exception->getMessage());
         }
     }
+    public function edit(Question $question)
+    {
+        try {
+            return view('questions.edit', compact('question'));
+        }catch (\Exception $exception){
+            return redirect()->back()->with('error', 'Failed to load question for editing: ' . $exception->getMessage());
+        }
+    }
+
+    public function update(QuestionRequest $questionRequest, Question $question){
+        try {
+            $validated = $questionRequest->validated();
+            $this->questionService->updateQuestion($validated, $question);
+            return redirect()->route('dashboard')->with('status', 'Question Updated Successfully');
+        }catch (\Exception $exception){
+            return redirect()->back()->with('error', 'Failed to update question: ' . $exception->getMessage());
+        }
+    }
 }

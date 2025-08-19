@@ -26,4 +26,22 @@ class QuestionService
         ]);
         return true;
     }
+
+    public function updateQuestion($data, $question)
+    {
+        $options = [
+            'options' => $data['options'],
+            'correct_option' => $data['correct_option'],
+        ];
+        $question->update([
+            'question_text' => $data['question_text'],
+            'subject_id' => $data['subject_id'],
+            'options' => $options,
+            'mark' => $data['mark'],
+            'type' => $data['type'],
+            'class_id' => $data['class_id'],
+            'difficulty' => $data['difficulty'],
+        ]);     
+        return true;
+    }
 }

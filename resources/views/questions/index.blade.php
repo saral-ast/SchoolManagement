@@ -47,6 +47,7 @@
                             <th>Difficulty</th>
                             <th>Mark</th>
                             <th>Options</th>
+                            <th>Edit</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -66,6 +67,9 @@
                                             aria-controls="q-{{ $question->id }}">
                                         Show
                                     </button>
+                                </td>
+                                <td>
+                                    <a href="{{ route('question.edit', $question->id) }}" class="btn btn-sm btn-warning">Edit</a>
                                 </td>
                             </tr>
                             <tr>

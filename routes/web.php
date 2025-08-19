@@ -99,6 +99,8 @@ Route::middleware('auth')->group(function(){
     Route::get('/questions',[QuestionController::class,'index'])->name('question.index');
     Route::get('/question/create',[QuestionController::class,'create'])->name('question.create');
     Route::post('/question/create',[QuestionController::class,'store'])->name('question.store');
+    Route::get('/question/{question}/edit',[QuestionController::class,'edit'])->name('question.edit');
+    Route::put('/question/{question}/edit',[QuestionController::class,'update'])->name('question.update');
 });
 
 Route::get('/register',function(){
