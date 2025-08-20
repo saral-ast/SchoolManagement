@@ -12,8 +12,8 @@ class Quiz extends Model
         return $this->belongsTo(Subject::class, 'subject_id');
     }
 
-    public  function teacher(){
-        return $this->belongsTo(User::class, 'teacher_id');
+    public  function created_by(){
+        return $this->belongsTo(User::class, 'created_by');
     }
 
     public function  questions()

@@ -59,7 +59,7 @@ class User extends Authenticatable
     }
 
     public function teacher(){
-        return $this->hasMany(Teacher::class);
+        return $this->hasOne(Teacher::class);
     }
 
     public function student_parent(){
@@ -68,6 +68,10 @@ class User extends Authenticatable
 
       public function student(){
         return $this->hasOne(Student::class);
+    }
+
+    public function quizzes(){
+        return $this->hasMany(Quiz::class);
     }
 
     public function user_type()

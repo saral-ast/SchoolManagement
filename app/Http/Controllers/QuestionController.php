@@ -24,8 +24,9 @@ class QuestionController
             if($userType === 'admin'){
                 $questions = Question::with('subject','class')->paginate(10);
             } elseif ($userType === 'teacher') {
-                $teacher = Teacher::where('user_id', auth()->id())->first();
-                $subjects = $teacher->subjects->pluck('id')->toArray();
+                // $teacher = Teacher::where('user_id', auth()->id())->first();
+                // $subjects = $teacher->subjects->pluck('id')->toArray();
+                $subjects = auth()->user()->teacher->subjects->pluck('id')->toArray();
                 $questions = Question::whereIn('subject_id', $subjects)
                     ->with('subject', 'class')
                     ->paginate(10);

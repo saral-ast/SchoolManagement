@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('description');
             $table->foreignIdFor(App\Models\Subject::class, 'subject_id')->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(App\Models\Teacher::class, 'teacher_id')->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(App\Models\User::class, 'created_by')->constrained()->cascadeOnDelete();
             $table->foreignIdFor(App\Models\Classes::class, 'class_id')->constrained()->cascadeOnDelete();
             $table->string('total_questions')->default('10');
             $table->string('total_marks')->default('100');

@@ -49,7 +49,7 @@ class ConnectRelationshipsSeeder extends Seeder
                 'view.results',
                 'view.schedules',
                 'view.quizzes',
-                'attempt.quizzes',
+                'attempt.quizzes'
             ],
         ];
 

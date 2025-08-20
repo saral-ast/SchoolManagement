@@ -10,6 +10,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentParentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\QuizController;
 use App\Models\Admin;
 use App\Models\Student;
 use App\Models\User;
@@ -101,6 +102,8 @@ Route::middleware('auth')->group(function(){
     Route::post('/question/create',[QuestionController::class,'store'])->name('question.store');
     Route::get('/question/{question}/edit',[QuestionController::class,'edit'])->name('question.edit');
     Route::put('/question/{question}/edit',[QuestionController::class,'update'])->name('question.update');
+
+    Route::get('/quiz/create',[QuizController::class,'create'])->name('quiz.create');
 });
 
 Route::get('/register',function(){

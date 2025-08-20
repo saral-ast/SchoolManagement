@@ -16,8 +16,4 @@
         public function subjects(){
             return $this->belongsToMany(Subject::class,'teacher_subjects','teacher_id','subject_id');
         }
-
-        public function quizzes(){
-            return $this->hasMany(Quiz::class, 'teacher_id');
-        }
     }
