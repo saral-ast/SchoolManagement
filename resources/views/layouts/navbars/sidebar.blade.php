@@ -21,7 +21,7 @@
 
                 <div class="collapse show" id="laravel-examples">
                     <ul class="nav pl-4">
-                        
+
                         @permission('view.admins')
                         <li @class(['active' => request()->routeIs('admin.index')])>
                             <a href="{{ route('admin.index') }}">
@@ -29,7 +29,7 @@
                                 <p>Admin Details</p>
                             </a>
                         </li>
-                        @endpermission 
+                        @endpermission
                         @permission('view.teachers')
                         <li @class(['active' => request()->routeIs('teacher.index')])>
                             <a href="{{ route('teacher.index') }}">
@@ -38,7 +38,7 @@
                             </a>
                         </li>
                         @endpermission
-                       
+
                         @permission('view.students')
                         {{-- @dd('ef') --}}
                         <li @class(['active' => request()->routeIs('student.index')])>
@@ -47,7 +47,7 @@
                                 <p>Student Details</p>
                             </a>
                         </li>
-                        @endpermission 
+                        @endpermission
                         @permission('view.parents')
                         <li @class(['active' => request()->routeIs('parent.index')])>
                             <a href="{{ route('parent.index') }}">
@@ -55,8 +55,8 @@
                                 <p>Parent Details</p>
                             </a>
                         </li>
-                        @endpermission 
-                        
+                        @endpermission
+
 
                     </ul>
                 </div>
@@ -66,7 +66,7 @@
                <a href="{{ route('profile.edit') }}">
                                 <i class="tim-icons icon-single-02"></i>
                                 <p>User Profile</p>
-                 </a>             
+                 </a>
                 </li>
             {{-- <li @class(['active' => request()->routeIs('pages.maps')])>
                 <a href="{{ route('pages.maps') }}">
@@ -74,7 +74,7 @@
                     <p>Maps</p>
                 </a>
             </li> --}}
-            
+
             @permission('view.schedules')
             <li @class(['active' => request()->routeIs('schedule.index') || request()->routeIs('schedule.create')])>
                 <a href="{{ route('schedule.index') }}">
@@ -90,7 +90,24 @@
                                 <p>Results</p>
                             </a>
                         </li>
-            @endpermission 
-                    </ul>
+            @endpermission
+            @permission('create.quizzes')
+            <li @class(['active' => request()->routeIs('question.index') || request()->routeIs('question.create')])>
+                <a href="{{ route('question.index') }}">
+                    <i class="tim-icons icon-notes"></i>
+                    <p>Questions</p>
+                </a>
+            </li>
+            @endpermission
+
+            @permission('create.quizzes')
+            <li @class(['active' => request()->routeIs('quiz.index') || request()->routeIs('quiz.create') || request()->routeIs('quiz.selectQuestion')])>
+                <a href="{{ route('quiz.index') }}">
+                    <i class="tim-icons icon-paper"></i>
+                    <p>Quizzes</p>
+                </a>
+            </li>
+            @endpermission
+        </ul>
     </div>
 </div>

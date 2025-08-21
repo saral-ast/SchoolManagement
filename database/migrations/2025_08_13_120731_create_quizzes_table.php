@@ -23,6 +23,7 @@ return new class extends Migration
             $table->enum('type',['random','mixed'])->default('mixed');
             $table->boolean('negative_marking_enabled')->default(false);
             $table->float('negative_marking_percent')->default('0');
+            $table->enum('status', ['in_progress', 'done'])->default('in_progress');
             $table->timestamps();
         });
     }

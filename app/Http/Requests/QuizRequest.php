@@ -24,16 +24,13 @@ class QuizRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'description' => 'required|string|max:255',
-            'teacher_id' => 'required|exists:teachers,id',
             'subject_id' => 'required|exists:subjects,id',
             'class_id' => 'required|exists:classes,id',
             'total_questions' => 'required|integer|min:1',
             'total_marks' => 'required|integer|min:1',
             'type' => 'required|in:random,mixed',
-            'negative_marking_enabled' => 'required|boolean',
-            'negative_marking_percent' => 'required|numeric|min:0|max:100',
-            'questions' => 'required|array',
-            'questions.*.question_id' => 'required|exists:questions,id',
+            'negative_marking_enabled' => 'sometimes|boolean',
+            'negative_marking_percent' => 'nullable|numeric|min:0|max:100|required_if:negative_marking_enabled,1',
         ];
     }
 }

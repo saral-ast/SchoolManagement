@@ -59,7 +59,7 @@ Route::middleware('auth')->group(function(){
     Route::get('/parents/create',[StudentParentController::class,'create'])->name('parent.create')->middleware('permission:create.parents');
     Route::post('/parents/create',[StudentParentController::class,'store'])->name('parent.store')->middleware('permission:create.parents');
     // Show must be unique from edit
-    Route::get('/parents/{parent}',[StudentParentController::class,'show'])->name('pa   rent.show')->middleware('permission:view.parents');
+    Route::get('/parents/{parent}',[StudentParentController::class,'show'])->name('parent.show')->middleware('permission:view.parents');
     Route::get('/parents/{parent}/edit',[StudentParentController::class,'edit'])->name('parent.edit')->middleware('permission:edit.parents');
     Route::put('/parents/{parent}',[StudentParentController::class,'update'])->name('parent.update')->middleware('permission:edit.parents');
     Route::delete('/parents/{parent}',[StudentParentController::class,'destroy'])->name('parent.destroy')->middleware('permission:delete.parents');
@@ -103,7 +103,11 @@ Route::middleware('auth')->group(function(){
     Route::get('/question/{question}/edit',[QuestionController::class,'edit'])->name('question.edit');
     Route::put('/question/{question}/edit',[QuestionController::class,'update'])->name('question.update');
 
+    Route::get('/quizzes',[QuizController::class,'index'])->name('quiz.index');
     Route::get('/quiz/create',[QuizController::class,'create'])->name('quiz.create');
+    Route::post('/quiz/create',[QuizController::class,'store'])->name('quiz.details');
+    Route::get('/quiz/{quiz}/selectQuestion',[QuizController::class,'selectQuestion'])->name('quiz.selectQuestion');
+    Route::post('/quiz/{quiz}/attach-questions',[QuizController::class,'attachQuestions'])->name('quiz.attachQuestions');
 });
 
 Route::get('/register',function(){
