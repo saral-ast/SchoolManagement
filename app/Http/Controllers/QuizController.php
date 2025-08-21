@@ -20,9 +20,13 @@ class QuizController extends Controller
     }
     public function index()
     {
-        $quizzes = Quiz::with(['subject', 'class'])
-            ->orderByDesc('created_at')
-            ->get();
+        if(auth()->user()->user_type() == 'admin'){
+            $quizzes = Quiz::with(['class', 'subject'])->paginate(10);
+        }else if(auth()->user()->user_type() == 'teacher') {
+            $quizzes = Quiz::where('created_by', auth()->user()->id)
+                ->with(['class', 'subject'])
+                ->paginate(10);
+        }
 
         return view('quiz.index', compact('quizzes'));
     }
